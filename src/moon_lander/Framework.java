@@ -345,7 +345,6 @@ public class Framework extends Canvas {
     @Override
     public void mouseClicked(MouseEvent e)
     {
-    	System.out.println("버튼이 클릭됨");
     	JButton temp = (JButton)e.getSource();
             
     	if(temp.getText() == "1인 easy") {

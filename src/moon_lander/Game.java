@@ -4,11 +4,15 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.JButton;
 
 /**
@@ -92,9 +96,23 @@ public class Game {
             
             URL redBorderImgUrl = this.getClass().getResource("/resources/images/red_border.png");
             redBorderImg = ImageIO.read(redBorderImgUrl);
+            
+            File musicPath = new File("./resources/sounds/Cool_Space_Music.wav");
+			if(musicPath.exists()) {
+				AudioInputStream audioInput = AudioSystem.getAudioInputStream(musicPath);
+				Clip clip = AudioSystem.getClip();
+				clip.open(audioInput);
+				clip.start();
+				clip.loop(Clip.LOOP_CONTINUOUSLY);
+			} else {
+				System.out.println("Cannot find the Audio File");
+			}
         }
         catch (IOException ex) {
             Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        catch (Exception ex) {
+        	ex.printStackTrace();
         }
     }
     

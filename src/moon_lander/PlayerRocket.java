@@ -226,6 +226,17 @@ public class PlayerRocket {
                 x += speedX;
                 y += speedY;
         	}
+    		
+    		if(x > Framework.frameWidth - rocketImgWidth) {
+    			x = Framework.frameWidth - rocketImgWidth;
+    		} else if (x < 0) {
+    			x = 0;
+    		}
+    		if(y > Framework.frameHeight - rocketImgHeight) {
+    			y = Framework.frameHeight - rocketImgHeight;
+    		} else if (y < 0) {
+    			y = 0;
+    		}
     	}
     }
     

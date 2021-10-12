@@ -67,10 +67,13 @@ public class Game {
     {
     	switch(Framework.playerCnt) {
     		case 1:
+    			rocketNum = 1;
     			playerRocket1 = new PlayerRocket();
     		break;
     		case 2:
+    			rocketNum = 1;
     			playerRocket1 = new PlayerRocket();
+    			rocketNum = 2;
     			playerRocket2 = new PlayerRocket();
     		break;
     	}
@@ -103,11 +106,21 @@ public class Game {
     {
     	switch(Framework.playerCnt) {
 			case 1:
+				rocketNum = 1;
 				playerRocket1.ResetPlayer();
 			break;
 			case 2:
-				playerRocket1.ResetPlayer();
-				playerRocket2.ResetPlayer();
+				if(playerRocket2==null) {
+					rocketNum = 1;
+					playerRocket1.ResetPlayer();
+					rocketNum = 2;
+					playerRocket2 = new PlayerRocket();
+				} else {
+					rocketNum = 1;
+					playerRocket1.ResetPlayer();
+					rocketNum = 2;
+					playerRocket2.ResetPlayer();
+				}
 			break;
 		}
     }
@@ -147,7 +160,9 @@ public class Game {
     	    break;
     		case 2:
     			// Move the rocket
+    			rocketNum = 1;
 				playerRocket1.Update();
+				rocketNum = 2;
 		        playerRocket2.Update();
 		        
 		        // Checks where the player rocket 1 is. Is it still in the space or is it landed or crashed?
@@ -184,11 +199,9 @@ public class Game {
 		        
 		        if(playerRocket1.crashed && playerRocket2.crashed) {
 		        	Framework.gameState = Framework.GameState.GAMEOVER;
-		        } else if(playerRocket1.crashed && playerRocket2.landed) {
+		        } else if(playerRocket1.landed) {
 		        	Framework.gameState = Framework.GameState.GAMEOVER;
-		        } else if(playerRocket1.landed && playerRocket2.crashed) {
-		        	Framework.gameState = Framework.GameState.GAMEOVER;
-		        } else if(playerRocket1.landed && playerRocket2.landed) {
+		        } else if(playerRocket2.landed) {
 		        	Framework.gameState = Framework.GameState.GAMEOVER;
 		        }
     	}
@@ -232,7 +245,7 @@ public class Game {
     {
         Draw(g2d, mousePosition);
         
-        g2d.drawString("Press space or enter to restart.", Framework.frameWidth / 2 - 100, Framework.frameHeight / 3 + 70);
+        g2d.drawString("Click the button to restart.", Framework.frameWidth / 2 - 80, Framework.frameHeight / 3 + 70);
         
         switch(Framework.playerCnt) {
 			case 1:
@@ -244,20 +257,24 @@ public class Game {
 		        else
 		        {
 		            g2d.setColor(Color.red);
-		            g2d.drawString("You have crashed the rocket!", Framework.frameWidth / 2 - 95, Framework.frameHeight / 3);
+		            g2d.drawString("You have crashed the rocket!", Framework.frameWidth / 2 - 90, Framework.frameHeight / 3);
 		            g2d.drawImage(redBorderImg, 0, 0, Framework.frameWidth, Framework.frameHeight, null);
 		        }
 			break;
 			case 2:
-				if(playerRocket1.landed && playerRocket2.landed)
+				if(playerRocket1.landed)	
 		        {
-		            g2d.drawString("You have successfully landed!", Framework.frameWidth / 2 - 100, Framework.frameHeight / 3);
-		            g2d.drawString("You have landed in " + gameTime / Framework.secInNanosec + " seconds.", Framework.frameWidth / 2 - 100, Framework.frameHeight / 3 + 20);
+		            g2d.drawString("Rocket1 has successfully landed!", Framework.frameWidth / 2 - 100, Framework.frameHeight / 3);
+		            g2d.drawString("You have landed in " + gameTime / Framework.secInNanosec + " seconds.", Framework.frameWidth / 2 - 95, Framework.frameHeight / 3 + 20);
 		        }
+				else if(playerRocket2.landed) {
+					g2d.drawString("Rocket2 has successfully landed!", Framework.frameWidth / 2 - 100, Framework.frameHeight / 3);
+		            g2d.drawString("You have landed in " + gameTime / Framework.secInNanosec + " seconds.", Framework.frameWidth / 2 - 95, Framework.frameHeight / 3 + 20);
+				}
 		        else if(playerRocket1.crashed && playerRocket2.crashed)
 		        {
 		            g2d.setColor(Color.red);
-		            g2d.drawString("You have crashed the rocket!", Framework.frameWidth / 2 - 95, Framework.frameHeight / 3);
+		            g2d.drawString("You have crashed the rocket!", Framework.frameWidth / 2 - 90, Framework.frameHeight / 3);
 		            g2d.drawImage(redBorderImg, 0, 0, Framework.frameWidth, Framework.frameHeight, null);
 		        }
 		        else

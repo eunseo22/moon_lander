@@ -45,14 +45,14 @@ public class Window extends JFrame{
         this.setContentPane(new Framework());
         
         this.setVisible(true);
-        //String filepath = "C://scaf/moon_lander/resources/sounds/Cool_Space_Music.wav";
+        
+        //playing background music
         String filepath = "./resources/sounds/Cool_Space_Music.wav";
         playMusic(filepath);
     }
 
     private void playMusic(String musicLocation) {
 		try {
-			
 			File musicPath = new File(musicLocation);
 			if(musicPath.exists()) {
 				AudioInputStream audioInput = AudioSystem.getAudioInputStream(musicPath);

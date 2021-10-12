@@ -1,0 +1,242 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0064)http://www.gametutorial.net/article/Keyboard-input---Moon-lander -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	
+	<meta http-equiv="Content-Language" content="en">
+	<meta name="robots" content="index, follow">
+	<title>Java game tutorial - Keyboard input - Moon lander</title>
+	<meta name="title" content="Java game tutorial - Keyboard input - Moon lander">
+	<meta name="description" content="In this tutorial you will learn how to get keyboard input.">
+	<meta name="keywords" content="make games, games, tutorial, java games, game programming, game development, made games, game tutorials, 2d game, game framework, tut, tuts, game articles">
+	<link rel="stylesheet" href="./Java game tutorial - Keyboard input - Moon lander_files/gt.css" type="text/css">
+	<link rel="shortcut icon" href="http://www.gametutorial.net/images/gt.ico">
+
+	<link rel="stylesheet" type="text/css" href="./Java game tutorial - Keyboard input - Moon lander_files/jquery.lightbox-0.5.css" media="screen">
+	<script type="text/javascript" async="" src="./Java game tutorial - Keyboard input - Moon lander_files/ga.js"></script><script type="text/javascript" src="./Java game tutorial - Keyboard input - Moon lander_files/jquery.min.js"></script>
+	<script type="text/javascript" src="./Java game tutorial - Keyboard input - Moon lander_files/jquery.lightbox-0.5.min.js"></script>
+	
+	<script type="text/javascript">
+	
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-8126704-15']);
+	  _gaq.push(['_trackPageview']);
+	
+	  (function() {
+	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+	
+	</script>
+<style type="text/css" id="GINGER_SOFATWARE_style">.GINGER_SOFATWARE_noMark { background : transparent; }  .GINGER_SOFATWARE_wrapper{ position: absolute; overflow: hidden; margin: 0px; padding: 0px; border: 0px solid transparent } .GINGER_SOFATWARE_contour { position : absolute; margin: 0px; }  .GINGER_SOFATWARE_richText { margin : 0px; padding-bottom: 3px; border-width: 0px; border-color: transparent; display: block; color: transparent; -webkit-text-fill-color: transparent; overflow: hidden; white-space: pre-wrap;}  .GINGER_SOFATWARE_inputWrapper .GINGER_SOFATWARE_richText {position: absolute;}  .GINGER_SOFATWARE_canvas { display:none; background-repeat:no-repeat;}  .GINGER_SOFATWARE_control .GINGER_SOFATWARE_correct, .GINGER_SOFATWARE_control .GINGER_SOFATWARE_SpellingCorrect, .GINGER_SOFATWARE_control .GINGER_SOFATWARE_spelling, .GINGER_SOFATWARE_control .GINGER_SOFATWARE_mark {border-top-left-radius:2px; border-top-right-radius:2px; border-bottom-right-radius:2px; border-bottom-left-radius:2px;} .GINGER_SOFATWARE_control .GINGER_SOFATWARE_correct, .GINGER_SOFATWARE_control .GINGER_SOFATWARE_SpellingCorrect, .GINGER_SOFATWARE_control .GINGER_SOFATWARE_spelling, .GINGER_SOFATWARE_control .GINGER_SOFATWARE_mark {background-image:url(data:image/gif;base64,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)!important;} .GINGER_SOFATWARE_control .GINGER_SOFATWARE_correct.GINGER_SOFATWARE_synonym, .GINGER_SOFATWARE_control .GINGER_SOFATWARE_SpellingCorrect.GINGER_SOFATWARE_synonym, .GINGER_SOFATWARE_control .GINGER_SOFATWARE_spelling.GINGER_SOFATWARE_synonym, .GINGER_SOFATWARE_control .GINGER_SOFATWARE_mark.GINGER_SOFATWARE_synonym {background-image:url(data:image/gif;base64,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)!important;} .GINGER_SOFATWARE_control .GINGER_SOFATWARE_correct.GINGER_SOFATWARE_noSuggestion, .GINGER_SOFATWARE_control .GINGER_SOFATWARE_SpellingCorrect.GINGER_SOFATWARE_noSuggestion, .GINGER_SOFATWARE_control .GINGER_SOFATWARE_spelling.GINGER_SOFATWARE_noSuggestion, .GINGER_SOFATWARE_control .GINGER_SOFATWARE_mark.GINGER_SOFATWARE_noSuggestion {background-image:url(data:image/gif;base64,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)!important;} .GINGER_SOFATWARE_richText .GINGER_SOFATWARE_correct, .GINGER_SOFATWARE_richText .GINGER_SOFATWARE_SpellingCorrect, .GINGER_SOFATWARE_richText .GINGER_SOFATWARE_spelling, .GINGER_SOFATWARE_richText .GINGER_SOFATWARE_mark {position:relative; background-image:none!important;} .GINGER_SOFATWARE_richText .GINGER_SOFATWARE_markHighlightLeft { position : absolute; left:-2px; top:0px; bottom:0px; width:2px;} .GINGER_SOFATWARE_richText .GINGER_SOFATWARE_markHighlightRight { position : absolute; right:-2px; top:0px; bottom:0px; width:2px;} .GINGER_SOFATWARE_richText .GINGER_SOFATWARE_markHighlightTop { position : absolute; left:0px; right:0px; top:-2px; height:3px;} .GINGER_SOFATWARE_richText .GINGER_SOFATWARE_markHighlightBottom { position : absolute; left:0px; right:0px; bottom:-2px; height:3px;}</style></head>
+<body ginger_sofatware_stylesheet="true" ginger_sofatware_doc="true">
+	<div class="page">
+
+		<div class="head">
+
+			<div class="site-title">
+				<h1><a href="http://www.gametutorial.net/" target="_self" title="Home of gametutorial.net">GameTutorial</a></h1>
+				<div class="description">
+					<h2>Learn how to make 2D games.</h2>
+				</div>
+				<div class="net">
+					.net
+				</div>
+			</div>
+
+			<div class="main-menu">
+				<div class="main-menu-item">
+					<a href="http://www.gametutorial.net/tutorials" title="List of game tutorials">Tutorials</a>
+				</div>
+				<div class="main-menu-item">
+					<a href="http://www.gametutorial.net/games" title="Games created in tutorials and game source code">Games</a>
+				</div>
+				<div class="main-menu-item">
+					<a href="http://www.gametutorial.net/links" title="Useful links on game development">Links</a>
+				</div>
+				<div class="main-menu-item">
+					<a href="http://www.gametutorial.net/about" title="About gametutorial.net">About</a>
+				</div>
+			</div>
+
+		</div>
+
+		<div class="content">
+
+			<div class="side-content">
+
+				<div class="side-content-item">
+					<div class="side-content-item-title">
+						Tutorials
+					</div>
+					<ul><li><a href="http://www.gametutorial.net/article/Game-framework">Game framework</a></li>
+						<li><a href="./Java game tutorial - Keyboard input - Moon lander_files/Java game tutorial - Keyboard input - Moon lander.htm">Keyboard input - Moon lander</a></li>
+						<li><a href="http://www.gametutorial.net/article/Mouse-input---Shoot-the-duck">Mouse input - Shoot the duck</a></li>
+						<li><a href="http://www.gametutorial.net/article/Animation---Helicopter-Bettle">Animation - Helicopter Bettle</a></li>
+						
+					</ul>
+				</div>
+
+				<div>
+					<a href="https://play.google.com/store/apps/details?id=com.theuzo007.squareattack" target="_blank">
+						<img src="./Java game tutorial - Keyboard input - Moon lander_files/ad_square-attack.jpg" alt="Game Square Attack for Android" height="600">
+					</a>
+				</div>
+
+			</div>
+
+			<div class="main-content">
+
+
+				<script type="text/javascript">
+					$(function() {
+						$('#article-image a').lightBox();
+					});
+				</script>
+
+				<div class="article">
+					<h3>
+						Keyboard input - Moon lander
+					</h3>
+					<p class="article-description">
+In this tutorial you will learn how to get keyboard input and moving the object based on that input. 
+<br>
+We will make a game with the goal to land the rocket on the landing area as fast as possible.
+					</p>
+					<div class="article-image" id="article-image">
+						<a href="http://www.gametutorial.net/games-showcase/Moon-lander/moon-lander.jpg" title="Moon lander"><img src="./Java game tutorial - Keyboard input - Moon lander_files/moon-lander-150x120.jpg" alt="Moon lander game screenshot"></a>
+					</div>
+					
+					<div class="clear">
+					</div>
+
+<h4>What we will do</h4>
+<p>
+	First when game opens we will show main menu image with background and game title and text that let player know how to start the game. 
+	Player will be able to start the game with pressing any key.
+	<br>
+	When player starts the game we will call newGame() method that will create the game and start it. In the game player will have to softly 
+	land the rocket. If the rockets speed is too high when landing or if player trays to land out of landing area, then the rocket crashes. 
+	Gravity will pull the rocket down to the moon. Player will control the rocket with W A D keys. When player lands or crash the rocket the 
+	game will ends.
+	<br>
+	When the game ends we will draw on the screen how to restart the game. Player will be able to restart the game with space or enter key.
+</p>
+<p>
+	Download the game source code at the bottom of this page so you could check it while reading this. Also the source code is commented, so 
+	read the comments.
+</p>
+
+<h4>Game classes</h4>
+<p>
+	This game has six classes – four from game framework and two additional – Window.java, Canvas.java, Framework.java, Game.java, 
+	PlayerRocket.java and LandingArea.java.
+</p>
+
+<h5>Window.java</h5>
+<p>
+	In this class I set up game title to be “Moon lander” and window size to 800 x 600.
+</p>
+
+<h5>Canvas.java</h5>
+<p>
+	In this class I didn’t set anything.
+</p>
+
+<h5>Framework.java</h5>
+<p>
+	In this class I add one variable – moonLanderMenuImg. Its type is BufferedImage and will contain image for main menu. In method 
+	LoadContent() I add code to load this image.
+	<br>
+	Into Draw(Graphics2D g2d) method I have inserted code for three states. Into “GAMEOVER” state I add call to 
+	game.DrawGameOver(g2d, mousePosition(), gameTime) method that draws a “game over screen”. We will see this method in Game.java class. 
+	The second state into which I inserted the code is “MAIN_MENU”. Here I draw the image for main menu and text which tells player how to 
+	start and which keys to use for playing. Last, the third state is “GAME_CONTENT_LOADING”; in this state I add code to draw on the screen 
+	text “game is loading”.
+	<br>
+	Last thing that I add in this class is code in keyReleasedFramework(KeyEvent e) method. Here I add switch statement for game states. When 
+	we are in “MAIN_MENU” state and any key is released a newGame() method will be called so that the game will begin. And when we are in 
+	“GAMEOVER” state we check if space or enter key were released and if they were we call restartGame() method.
+</p>
+
+<h5>Game.java</h5>
+<p>
+	Here we have four variables. One represents rocket – playerRocket; another represents landing area – landingArea. Another two are images; 
+	one for the background, another one for red frame border when rocket crashed.
+	<br>
+	We initialize variables and load images in methods Initialize() and LoadContent().
+	<br>
+	In the RestartGame() method we call playerRocket.ResetPlayer(); so that rocket is reset when we restart the game.
+	<br>
+	In the UpdateGame(long gameTime, Point mousePosition) method we move rocket and check if the rocket is still in the space or is it landed 
+	or crashed.<br>
+	In the Draw(Graphics2D g2d, Point mousePosition) method we draw game background, the landing area and the rocket.
+	<br>
+	In DrawGameOver(Graphics2D g2d, Point mousePosition, long gameTime) method we draw “game over screen”. First we call Draw(g2d, mousePosition) 
+	method so that game background, the landing area and the rocket are drowned. Then we draw some text and red frame border depending on whether 
+	the rocket is landed or crashed.
+</p>
+
+<h5>LandingArea.java</h5>
+<p>
+	This class represents a landing area on which the rocket will have to land. 
+	<br><br>
+	We have the variables x and y representing the coordinates of where the landing area will be drawn on the game frame/window. In the upper 
+	left corner coordinates are 0:0.
+	<br>
+	Next variable is landingAreaImg which will contain image of landing area. Last variable is landingAreaImgWidth which will contain width of 
+	landing area image.
+	<br><br>
+	In Initialize() method we set x and y coordinate for landing area.
+	<br>
+	In LoadContent() method we load an image of landing area and initialize variable landingAreaImgWidth now that we can get width of the image.
+	In Draw(Graphics2D g2d) method we draw landing area on the screen.
+</p>
+
+<h5>PlayerRocket.java</h5>
+<p>
+	This class represents a rocket that player will have to land.
+	<br><br>
+	Here we have variables x and y for the rocket coordinates that we will change during the game. Then we have boolean variables landed and 
+	crashed that indicate whether the rocket is landed or crashed, if both are false then rocket is still in the space. Then we have some other 
+	variables, just look at the source code and read the comments.
+	<br><br>
+	In the class constructor we set starting x coordinate for the rocket. The reason why here, is because we dynamically set starting x coordinate 
+	for the rocket and in Initialize() method we didn’t yet have a width of the rocket image, but here we have.
+	<br><br>
+	Let’s take a look at the Update() method. In this method we move the rocket. First we check if player hold down W key and if it, then we 
+	subtract variable speedY by speedAccelerating. If W key isn’t down then we add to variable speedY. Then we do almost the same for moving 
+	the rocket left. Only difference here is that we only add to speedX until the rocket stops, until we reach the zero. We do the same for moving 
+	right except that we add to speedX when player holds down D key.
+	<br>
+	At the end of Update() method we actually move the rocket – we change the rocket coordinates by the speed that we calculated above.
+	<br><br>
+	In Draw(Graphics2D g2d) method we draw rocket coordinates and the rocket image.
+</p>
+
+<h4>Exercise</h4>
+<p>
+	Make an meteor between rocket and moon so that player will have to avoid it.
+</p>
+
+<br><br>
+<a href="http://www.gametutorial.net/games-showcase/Moon-lander/Moon-lander.jar" title="Download Moon lander game">Download game</a> &nbsp;|&nbsp; <a href="http://www.gametutorial.net/games-showcase/Moon-lander/Moon-lander.jnlp" title="Start Moon lander game with java web start">Java web start</a> 
+<br>
+<a href="http://www.gametutorial.net/games-showcase/Moon-lander/Moon-lander_source-code.zip" title="Download Moon lander source code">Download source code</a>
+
+				</div>
+﻿
+			</div>
+
+			<div class="clear">
+			</div>
+
+		</div>
+
+		<div class="footer">
+			<a href="http://www.gametutorial.net/" title="Learn how to make 2D java games on www.gametutorial.net.">www.gametutorial.net</a> © 2013
+		</div>
+
+	</div>
+
+<iframe width="0" height="0" frameborder="0" src="about:blank" id="GINGER_SOFATWARE_contextMenuIFrame" scrolling="no" style="border: 0px solid; z-index: 2147483647; height: 0px; width: 0px; background-color: transparent;"></iframe><iframe width="0" height="0" frameborder="0" src="about:blank" id="GINGER_SOFATWARE_bubblesIFrame" scrolling="no" style="border: 0px solid; position: absolute; z-index: 2147483647; height: 0px; width: 0px; background-color: transparent;"></iframe><div id="GingerWidgetInfo" style="display:none;">{"version":"0.1.0.301","isExtension":true,"extensionName":"Chrome"}</div></body></html>

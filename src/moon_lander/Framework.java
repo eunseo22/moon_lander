@@ -79,10 +79,16 @@ public class Framework extends Canvas {
     private BufferedImage moonLanderMenuImg;
     
     // used for mode selection.
-    private JButton Mode1, Mode2, Easy, Normal, Hard;
+    // JButton name : Level + playerCnt.
+    private JButton Easy1, Normal1, Hard1, Easy2, Normal2, Hard2;
     
     // used for selecting number of rocket.
-    public static int playerCnt = 1;
+    // playerCnt 0 : initializing, playerCnt 1 : 1 person, playerCnt 2 : 2 person.
+    public static int playerCnt = 0;
+    
+    // used for setting level of game.
+    // level 1 : Easy, level 2 : Normal, level 3 : Hard.
+    public static int level = 1;
     
     public Framework ()
     {
@@ -214,15 +220,25 @@ public class Framework extends Canvas {
     @Override
     public void Draw(Graphics2D g2d)
     {
-        Mode1 = new JButton("1인 모드");
-        Mode1.setBounds(frameWidth / 2 - 115, frameHeight / 2 + 50, 90, 20);
-        Mode1.addMouseListener(this);
-        Mode2 = new JButton("2인 모드");
-        Mode2.setBounds(frameWidth / 2 - 15, frameHeight / 2 + 50, 90, 20);
-        Mode2.addMouseListener(this);
-        Easy = new JButton("easy");
-        Normal = new JButton("normal");
-        Hard = new JButton("hard");
+    	// locate level/mode button.
+        Easy1 = new JButton("1인 easy");
+        Easy1.setBounds(frameWidth / 2 - 110, frameHeight / 2 + 30, 95, 20);
+        Easy1.addMouseListener(this);
+        Normal1 = new JButton("1인 normal");
+        Normal1.setBounds(frameWidth / 2 - 110, frameHeight / 2 + 55, 95, 20);
+        Normal1.addMouseListener(this);
+        Hard1 = new JButton("1인 hard");
+        Hard1.setBounds(frameWidth / 2 - 110, frameHeight / 2 + 80, 95, 20);
+        Hard1.addMouseListener(this);
+        Easy2 = new JButton("2인 easy");
+        Easy2.setBounds(frameWidth / 2 - 5, frameHeight / 2 + 30, 95, 20);
+        Easy2.addMouseListener(this);
+        Normal2 = new JButton("2인 normal");
+        Normal2.setBounds(frameWidth / 2 - 5, frameHeight / 2 + 55, 95, 20);
+        Normal2.addMouseListener(this);
+        Hard2 = new JButton("2인 hard");
+        Hard2.setBounds(frameWidth / 2 - 5, frameHeight / 2 + 80, 95, 20);
+        Hard2.addMouseListener(this);
         
         switch (gameState)
         {
@@ -231,15 +247,23 @@ public class Framework extends Canvas {
             break;
             case GAMEOVER:
                 game.DrawGameOver(g2d, mousePosition(), gameTime);
-                this.add(Mode1);
-                this.add(Mode2);
+                this.add(Easy1);
+                this.add(Normal1);
+                this.add(Hard1);
+                this.add(Easy2);
+                this.add(Normal2);
+                this.add(Hard2);
             break;
             case MAIN_MENU:
                 g2d.drawImage(moonLanderMenuImg, 0, 0, frameWidth, frameHeight, null);
                 g2d.setColor(Color.white);
-                g2d.drawString("Use w a d keys to controle the rocket.", frameWidth / 2 - 117, frameHeight / 2 + 20);
-                this.add(Mode1);
-                this.add(Mode2);
+                g2d.drawString("Click the button to start the game you want.", frameWidth / 2 - 117, frameHeight / 2 + 20);
+                this.add(Easy1);
+                this.add(Normal1);
+                this.add(Hard1);
+                this.add(Easy2);
+                this.add(Normal2);
+                this.add(Hard2);
                 g2d.drawString("WWW.GAMETUTORIAL.NET", 7, frameHeight - 5);
             break;
             case OPTIONS:
@@ -322,40 +346,35 @@ public class Framework extends Canvas {
     public void mouseClicked(MouseEvent e)
     {
     	System.out.println("버튼이 클릭됨");
-    	if((JButton)e.getSource() instanceof JButton) {
-    		JButton temp = (JButton)e.getSource();
-    		if(temp.getText() == "1인 모드") {
-        		System.out.println("1인 모드 클릭됨");
-        		playerCnt = 1;
-        		switch(gameState) {
-	        		case MAIN_MENU:
-	        			newGame();
-	        		break;
-	        		case GAMEOVER:
-	        			restartGame();
-	        		break;
-        		}
-        	} else if(temp.getText() == "2인 모드") {
-        		System.out.println("2인 모드 클릭됨");
-        		playerCnt = 2;
-        		switch(gameState) {
-	        		case MAIN_MENU:
-	        			newGame();
-	        		break;
-	        		case GAMEOVER:
-	        			restartGame();
-	        		break;
-	        	}
-        	}
-        	/*switch(gameState) {
-        		case MAIN_MENU:
-        			newGame();
-        		break;
-        		case GAMEOVER:
-        			restartGame();
-        		break;
-        	}*/
-        	this.removeAll();
+    	JButton temp = (JButton)e.getSource();
+            
+    	if(temp.getText() == "1인 easy") {
+        	playerCnt = 1;
+        	level = 1;
+        } else if(temp.getText() == "1인 normal") {
+        	playerCnt = 1;
+        	level = 2;
+        } else if(temp.getText() == "1인 hard") {
+    		playerCnt = 1;
+        	level = 3;
+    	} else if(temp.getText() == "2인 easy") {
+    		playerCnt = 2;
+    		level = 1;
+    	} else if(temp.getText() == "2인 normal") {
+    		playerCnt = 2;
+    		level = 2;
+    	} else if(temp.getText() == "2인 hard") {
+    		playerCnt = 2;
+    		level = 3;
     	}
+    	switch(gameState) {
+	    	case MAIN_MENU:
+	    		newGame();
+	    	break;
+	    	case GAMEOVER:
+	    		restartGame();
+	    	break;
+	    }
+        this.removeAll();
     }
 }

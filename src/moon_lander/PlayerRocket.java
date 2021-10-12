@@ -186,6 +186,15 @@ public class PlayerRocket {
                 // Moves the rocket.
                 x += speedX;
                 y += speedY;
+                
+                
+             // Edit the rocket's coordinates.
+                if(x < 0) x = 0;
+                else if(x > Framework.frameWidth - rocketImgWidth) x =  Framework.frameWidth-rocketImgWidth;
+                
+                if(y<0) y=0;
+                
+                
         	} else {
         		// Calculating speed for moving up or down.
                 if(Canvas.keyboardKeyState(KeyEvent.VK_W))
@@ -208,6 +217,13 @@ public class PlayerRocket {
                 // Moves the rocket.
                 x += speedX;
                 y += speedY;
+                
+                
+                // Edit the rocket's coordinates.
+                if(x < 0) x = 0;
+                else if(x > Framework.frameWidth - rocketImgWidth) x =  Framework.frameWidth-rocketImgWidth;
+                
+                if(y<0) y=0;
         	}
     	}
     }
@@ -237,7 +253,7 @@ public class PlayerRocket {
         // If the rocket is crashed.
         else if(crashed)
         {
-            g2d.drawImage(rocketCrashedImg, x, y + rocketImgHeight - rocketCrashedImg.getHeight(), null);
+            g2d.drawImage(rocketCrashedImg, x - rocketImgWidth, y + rocketImgHeight - rocketCrashedImg.getHeight(), null);
         }
         // If the rocket is still in the space.
         else

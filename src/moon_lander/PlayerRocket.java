@@ -233,7 +233,6 @@ public class PlayerRocket {
         g2d.setColor(Color.white);
         if(Game.rocketNum == 1) {
         	g2d.drawString("Rocket 1 coordinates: "+ x +" : "+ y, 5, 15);
-        	g2d.drawString(Framework.frameHeight +" " + Framework.frameWidth, 5, 25);  // 
         } else {
         	g2d.drawString("Rocket 2 coordinates: "+ x +" : "+ y, Framework.frameWidth-180, 15);
         }

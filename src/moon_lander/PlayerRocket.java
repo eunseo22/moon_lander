@@ -119,15 +119,30 @@ public class PlayerRocket {
     {
         try
         {
-            URL rocketImgUrl = this.getClass().getResource("/resources/images/rocket.png");
-            rocketImg = ImageIO.read(rocketImgUrl);
+        	URL rocketImgUrl;
+        	URL rocketLandedImgUrl;
+        	URL rocketCrashedImgUrl;
+        	if(Framework.playerCnt == 1) {
+        		rocketImgUrl = this.getClass().getResource("/resources/images/rocket.png");
+                rocketLandedImgUrl = this.getClass().getResource("/resources/images/rocket_landed.png");
+                rocketCrashedImgUrl = this.getClass().getResource("/resources/images/rocket_crashed.png");
+        	} else {
+        		if(Game.rocketNum == 1) {
+        			rocketImgUrl = this.getClass().getResource("/resources/images/rocket_orange.png");
+                    rocketLandedImgUrl = this.getClass().getResource("/resources/images/rocket_landed_orange.png");
+                    rocketCrashedImgUrl = this.getClass().getResource("/resources/images/rocket_crashed_orange.png");
+        		} else {
+        			rocketImgUrl = this.getClass().getResource("/resources/images/rocket_purple.png");
+                    rocketLandedImgUrl = this.getClass().getResource("/resources/images/rocket_landed_purple.png");
+                    rocketCrashedImgUrl = this.getClass().getResource("/resources/images/rocket_crashed_purple.png");
+        		}
+        	}
+        	rocketImg = ImageIO.read(rocketImgUrl);
             rocketImgWidth = rocketImg.getWidth();
             rocketImgHeight = rocketImg.getHeight();
             
-            URL rocketLandedImgUrl = this.getClass().getResource("/resources/images/rocket_landed.png");
             rocketLandedImg = ImageIO.read(rocketLandedImgUrl);
             
-            URL rocketCrashedImgUrl = this.getClass().getResource("/resources/images/rocket_crashed.png");
             rocketCrashedImg = ImageIO.read(rocketCrashedImgUrl);
             
             URL rocketFireImgUrl = this.getClass().getResource("/resources/images/rocket_fire.png");
@@ -145,6 +160,8 @@ public class PlayerRocket {
     {
         landed = false;
         crashed = false;
+        
+        LoadContent();
         
         x = random.nextInt(Framework.frameWidth - rocketImgWidth);
         y = 10;
@@ -186,15 +203,6 @@ public class PlayerRocket {
                 // Moves the rocket.
                 x += speedX;
                 y += speedY;
-                
-                
-             // Edit the rocket's coordinates.
-                if(x < 0) x = 0;
-                else if(x > Framework.frameWidth - rocketImgWidth) x =  Framework.frameWidth-rocketImgWidth;
-                
-                if(y<0) y=0;
-                
-                
         	} else {
         		// Calculating speed for moving up or down.
                 if(Canvas.keyboardKeyState(KeyEvent.VK_W))
@@ -217,13 +225,6 @@ public class PlayerRocket {
                 // Moves the rocket.
                 x += speedX;
                 y += speedY;
-                
-                
-                // Edit the rocket's coordinates.
-                if(x < 0) x = 0;
-                else if(x > Framework.frameWidth - rocketImgWidth) x =  Framework.frameWidth-rocketImgWidth;
-                
-                if(y<0) y=0;
         	}
     	}
     }
@@ -240,20 +241,12 @@ public class PlayerRocket {
         // If the rocket is landed.
         if(landed)
         {
-        	switch (Game.rocketNum) {
-			case 1:
-				g2d.drawImage(rocketLandedImg, x, y, null);
-				break;
-			case 2:
-				g2d.drawImage(rocketLandedImg, x, y, null);
-				break;
-			}
-            g2d.drawImage(rocketLandedImg, x, y, null);
+        	g2d.drawImage(rocketLandedImg, x, y, null);
         }
         // If the rocket is crashed.
         else if(crashed)
         {
-            g2d.drawImage(rocketCrashedImg, x - rocketImgWidth, y + rocketImgHeight - rocketCrashedImg.getHeight(), null);
+            g2d.drawImage(rocketCrashedImg, x, y + rocketImgHeight - rocketCrashedImg.getHeight(), null);
         }
         // If the rocket is still in the space.
         else

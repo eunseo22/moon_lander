@@ -11,95 +11,40 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
-/**
- * The space rocket with which player will have to land.
- * 
- * @author www.gametutorial.net
- */
 
 public class PlayerRocket {
-    
-    /**
-     * We use this to generate a random number for starting x coordinate of the rocket.
-     */
+	
     private Random random;
- 
-    /**
-     * X coordinate of the rocket.
-     */
     public int x;
-    /**
-     * Y coordinate of the rocket.
-     */
     public int y;
-    
-    /**
-     * Is rocket landed?
-     */
     public boolean landed;
-    
-    /**
-     * Has rocket crashed?
-     */
     public boolean crashed;
-        
-    /**
-     * Accelerating speed of the rocket.
-     */
     private int speedAccelerating;
-    /**
-     * Stopping/Falling speed of the rocket. Falling speed because, the gravity pulls the rocket down to the moon.
-     */
     private int speedStopping;
-    
-    /**
-     * Maximum speed that rocket can have without having a crash when landing.
-     */
     public int topLandingSpeed;
-    
-    /**
-     * How fast and to which direction rocket is moving on x coordinate?
-     */
     private int speedX;
-    /**
-     * How fast and to which direction rocket is moving on y coordinate?
-     */
     public int speedY;
-            
-    /**
-     * Image of the rocket in air.
-     */
-    private BufferedImage rocketImg;
-    /**
-     * Image of the rocket when landed.
-     */
-    private BufferedImage rocketLandedImg;
-    /**
-     * Image of the rocket when crashed.
-     */
-    private BufferedImage rocketCrashedImg;
-    /**
-     * Image of the rocket fire.
-     */
-    private BufferedImage rocketFireImg;
     
-    /**
-     * Width of rocket.
-     */
+    private BufferedImage rocketImg;
+    private BufferedImage rocketLandedImg;
+    private BufferedImage rocketCrashedImg;
+    private BufferedImage rocketFireImg;
     public int rocketImgWidth;
-    /**
-     * Height of rocket.
-     */
     public int rocketImgHeight;
     
+    // 스코어 관리 위한 변수
+    public boolean isWin = false;     
+    public boolean isSurvives = false;
+    public int kill = 0;
+    // 
     
     public PlayerRocket()
     {
         Initialize();
         LoadContent();
         
-        // Now that we have rocketImgWidth we set starting x coordinate.
         x = random.nextInt(Framework.frameWidth - rocketImgWidth);
+        // 범위 조정해야 함.
     }
     
     
@@ -122,12 +67,12 @@ public class PlayerRocket {
         	URL rocketImgUrl;
         	URL rocketLandedImgUrl;
         	URL rocketCrashedImgUrl;
-        	if(Framework.playerCnt == 1) {
+        	if(Framework.playerCnt == 1) {   // 1인용일 때는 그냥 회색 로켓
         		rocketImgUrl = this.getClass().getResource("/resources/images/rocket.png");
                 rocketLandedImgUrl = this.getClass().getResource("/resources/images/rocket_landed.png");
                 rocketCrashedImgUrl = this.getClass().getResource("/resources/images/rocket_crashed.png");
         	} else {
-        		if(Game.rocketNum == 1) {
+        		if(Game.rocketNum == 1) {    // 2인용, 1번째 로켓이 오렌지색.
         			rocketImgUrl = this.getClass().getResource("/resources/images/rocket_orange.png");
                     rocketLandedImgUrl = this.getClass().getResource("/resources/images/rocket_landed_orange.png");
                     rocketCrashedImgUrl = this.getClass().getResource("/resources/images/rocket_crashed_orange.png");
@@ -153,9 +98,6 @@ public class PlayerRocket {
         }
     }
     
-    /**
-     * Here we set up the rocket when we starting a new game.
-     */
     public void ResetPlayer()
     {
         landed = false;
@@ -171,9 +113,6 @@ public class PlayerRocket {
     }
     
     
-    /**
-     * Here we move the rocket.
-     */
     public void Update()
     {
     	if(this.crashed) {
@@ -181,6 +120,7 @@ public class PlayerRocket {
     	} else if(this.landed) {
     		
     	} else {
+    		// 이부분 코드 개선 필요해보임
     		if(Game.rocketNum == 2) {
         		// Calculating speed for moving up or down.
                 if(Canvas.keyboardKeyState(KeyEvent.VK_UP))
@@ -249,17 +189,14 @@ public class PlayerRocket {
         	g2d.drawString("Rocket 2 coordinates: "+ x +" : "+ y, Framework.frameWidth-180, 15);
         }
         
-        // If the rocket is landed.
         if(landed)
         {
         	g2d.drawImage(rocketLandedImg, x, y, null);
         }
-        // If the rocket is crashed.
         else if(crashed)
         {
             g2d.drawImage(rocketCrashedImg, x, y + rocketImgHeight - rocketCrashedImg.getHeight(), null);
         }
-        // If the rocket is still in the space.
         else
         {
             // If player hold down a W key we draw rocket fire.

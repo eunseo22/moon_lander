@@ -15,32 +15,12 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.swing.JButton;
 
-/**
- * Actual game.
- * 
- * @author www.gametutorial.net
- */
-
 public class Game {
 
-    /**
-     * The space rocket with which player will have to land.
-     */
+    
     private PlayerRocket playerRocket1, playerRocket2;
-    
-    /**
-     * Landing area on which rocket will have to land.
-     */
     private LandingArea landingArea;
-    
-    /**
-     * Game background image.
-     */
     private BufferedImage backgroundImg;
-    
-    /**
-     * Red border of the frame. It is used when player crash the rocket.
-     */
     private BufferedImage redBorderImg;
     
     public static int rocketNum = 1;
@@ -52,9 +32,7 @@ public class Game {
         Thread threadForInitGame = new Thread() {
             @Override
             public void run(){
-                // Sets variables and objects for the game.
                 Initialize();
-                // Load game files (images, sounds, ...)
                 LoadContent();
                 
                 Framework.gameState = Framework.GameState.PLAYING;
@@ -64,9 +42,6 @@ public class Game {
     }
     
     
-   /**
-     * Set variables and objects for the game.
-     */
     private void Initialize()
     {
     	switch(Framework.playerCnt) {
@@ -84,9 +59,6 @@ public class Game {
         landingArea  = new LandingArea();
     }
     
-    /**
-     * Load game files - images, sounds, ...
-     */
     private void LoadContent()
     {
         try
@@ -117,9 +89,6 @@ public class Game {
     }
     
     
-    /**
-     * Restart game - reset some variables.
-     */
     public void RestartGame()
     {
     	switch(Framework.playerCnt) {
@@ -144,12 +113,6 @@ public class Game {
     }
     
     
-    /**
-     * Update game logic.
-     * 
-     * @param gameTime gameTime of the game.
-     * @param mousePosition current mouse position.
-     */
     public void UpdateGame(long gameTime, Point mousePosition)
     {
     	switch(Framework.playerCnt) {
@@ -225,12 +188,7 @@ public class Game {
     	}
     }
     
-    /**
-     * Draw the game to the screen.
-     * 
-     * @param g2d Graphics2D
-     * @param mousePosition current mouse position.
-     */
+   
     public void Draw(Graphics2D g2d, Point mousePosition)
     {
         g2d.drawImage(backgroundImg, 0, 0, Framework.frameWidth, Framework.frameHeight, null);
@@ -252,13 +210,6 @@ public class Game {
     }
     
     
-    /**
-     * Draw the game over screen.
-     * 
-     * @param g2d Graphics2D
-     * @param mousePosition Current mouse position.
-     * @param gameTime Game time in nanoseconds.
-     */
     public void DrawGameOver(Graphics2D g2d, Point mousePosition, long gameTime)
     {
         Draw(g2d, mousePosition);
@@ -302,4 +253,10 @@ public class Game {
 			break;
 		}
     }
+
+
+	public void InitializeE(int level) {
+		// TODO Auto-generated method stub
+		
+	}
 }

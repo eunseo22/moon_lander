@@ -11,8 +11,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
+import sprite.Sprite;
 
-public class PlayerRocket {
+
+public class PlayerRocket extends Sprite{
 	
     private Random random;
     public int x;
@@ -47,6 +49,12 @@ public class PlayerRocket {
         // 범위 조정해야 함.
     }
     
+    public int getX() {
+		return x;
+	}
+	public int getY() {
+		return y;
+	}
     
     private void Initialize()
     {
@@ -120,63 +128,63 @@ public class PlayerRocket {
     	} else if(this.landed) {
     		
     	} else {
-    		// 이부분 코드 개선 필요해보임
-    		if(Game.rocketNum == 2) {
-        		// Calculating speed for moving up or down.
+    		if(Game.rocketNum == 2) {  // 2번째 로켓일 때.
                 if(Canvas.keyboardKeyState(KeyEvent.VK_UP))
                     speedY -= speedAccelerating;
                 else
                     speedY += speedStopping;
                 
-                // Calculating speed for moving or stopping to the left.
                 if(Canvas.keyboardKeyState(KeyEvent.VK_LEFT))
                     speedX -= speedAccelerating;
                 else if(speedX < 0)
                     speedX += speedStopping;
                 
-                // Calculating speed for moving or stopping to the right.
                 if(Canvas.keyboardKeyState(KeyEvent.VK_RIGHT))
                     speedX += speedAccelerating;
                 else if(speedX > 0)
                     speedX -= speedStopping;
                 
-                // Moves the rocket.
                 x += speedX;
                 y += speedY;
-        	} else {
-        		// Calculating speed for moving up or down.
+                
+        	} else {               // 1번째 로켓일 때
                 if(Canvas.keyboardKeyState(KeyEvent.VK_W))
                     speedY -= speedAccelerating;
                 else
                     speedY += speedStopping;
                 
-                // Calculating speed for moving or stopping to the left.
                 if(Canvas.keyboardKeyState(KeyEvent.VK_A))
                     speedX -= speedAccelerating;
                 else if(speedX < 0)
                     speedX += speedStopping;
                 
-                // Calculating speed for moving or stopping to the right.
                 if(Canvas.keyboardKeyState(KeyEvent.VK_D))
                     speedX += speedAccelerating;
                 else if(speedX > 0)
                     speedX -= speedStopping;
                 
-                // Moves the rocket.
                 x += speedX;
                 y += speedY;
         	}
     		
-    		if(x > Framework.frameWidth - rocketImgWidth) {
-    			x = Framework.frameWidth - rocketImgWidth;
-    		} else if (x < 0) {
-    			x = 0;
+    		if(x <= 2) x=2;
+    		if( x >= Params.BOARD_WIDTH - 2*rocketImgWidth) {
+    			
+    			x= Params.BOARD_WIDTH - 2*rocketImgWidth;
     		}
-    		if(y > Framework.frameHeight - rocketImgHeight) {
-    			y = Framework.frameHeight - rocketImgHeight;
-    		} else if (y < 0) {
-    			y = 0;
+    		
+    		if(y <= 2) y=2;
+    		if( y >= Params.BOARD_HEIGHT - 2*rocketImgHeight) {
+    			
+    			y= Params.BOARD_HEIGHT - 2*rocketImgHeight;
     		}
+    		
+			/*  // 이전 코드
+			 * if(x > Framework.frameWidth - rocketImgWidth) { x = Framework.frameWidth -
+			 * rocketImgWidth; } else if (x < 0) { x = 0; } if(y > Framework.frameHeight -
+			 * rocketImgHeight) { y = Framework.frameHeight - rocketImgHeight; } else if (y
+			 * < 0) { y = 0; }
+			 */
     	}
     }
     
@@ -207,5 +215,41 @@ public class PlayerRocket {
             g2d.drawImage(rocketImg, x, y, null);
         }
     }
+
+	public void KeyReleased(KeyEvent e) {
+		int key = e.getKeyCode();
+
+        if (key == KeyEvent.VK_A) {
+            x -= 2;
+        }
+
+        if (key == KeyEvent.VK_D) {
+        	x += 2;
+        }
+        
+        if (key == KeyEvent.VK_W) {
+        	y -= 2;
+        }
+	}
+
+	public void keyPressed(KeyEvent e) {
+		int key = e.getKeyCode();
+		
+		if(key == KeyEvent.VK_A) {
+			
+			x += 0;
+		}
+		
+		if(key == KeyEvent.VK_D) {
+			
+			x += 0;
+		}
+		if (key == KeyEvent.VK_W) {
+        	y += 0;
+        }
+	}
+
+
+	
     
 }

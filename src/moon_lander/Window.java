@@ -9,6 +9,7 @@ public class Window extends JFrame{
         
     private Window()
     {
+    	
         this.setTitle("Moon Lander");
         this.setSize(2000, 1500);
         this.setLocationRelativeTo(null);

@@ -3,7 +3,7 @@ package sprite;
 import javax.swing.ImageIcon;
 
 public class Alien extends Sprite {
-private Bomb bomb;
+	private Bomb bomb;
 	
 	public Alien(int x, int y) {
 		

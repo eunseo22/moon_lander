@@ -11,7 +11,7 @@ public class Window extends JFrame{
     {
     	
         this.setTitle("Moon Lander");
-        this.setSize(2000, 1500);
+        this.setSize(1200, 900);
         this.setLocationRelativeTo(null);
         this.setResizable(false);        
         

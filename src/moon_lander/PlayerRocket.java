@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Random;
@@ -11,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
+import sprite.Shot;
 import sprite.Sprite;
 
 
@@ -42,13 +44,19 @@ public class PlayerRocket extends Sprite{
     public int score = 0;
     // 
     
+    // 총알 발사 위한 변수
+    private Game game;
+    
+    
+    
+    
     public PlayerRocket()
     {
         Initialize();
         LoadContent();
         
         x = random.nextInt(Framework.frameWidth - rocketImgWidth);
-        // 범위 조정해야 함.
+       
     }
     
     public int getX() {
@@ -149,6 +157,16 @@ public class PlayerRocket extends Sprite{
                 x += speedX;
                 y += speedY;
                 
+                // 공격 개시!
+                if(Canvas.keyboardKeyState(KeyEvent.VK_OPEN_BRACKET)) {
+                	Shot shot = Game.shots.get(1);
+                	if(!shot.isVisible()) {
+                		shot = new Shot(x,y);
+                		Game.shots.set(1, shot);
+                	}
+                }
+                
+                
         	} else {               // 1번째 로켓일 때
                 if(Canvas.keyboardKeyState(KeyEvent.VK_W))
                     speedY -= speedAccelerating;
@@ -167,6 +185,15 @@ public class PlayerRocket extends Sprite{
                 
                 x += speedX;
                 y += speedY;
+                
+                // 공격 개시 
+                if(Canvas.keyboardKeyState(KeyEvent.VK_SPACE)) {
+                	Shot shot = Game.shots.get(0);
+                	if(!shot.isVisible()) {
+                		shot = new Shot(x,y);
+                		Game.shots.set(0, shot);
+                	}
+                }
         	}
     		
     		if(x <= 2) x=2;
@@ -190,6 +217,19 @@ public class PlayerRocket extends Sprite{
     	}
     }
     
+    private void drawShot(Graphics2D g2d) {
+    	if(Game.shots == null) return;
+    	for(Shot shot : Game.shots) {
+    		if (shot.isVisible()) {
+               // g2d.drawImage(shot.getImage(), shot.getX(), shot.getY(), (ImageObserver) this);
+                g2d.drawImage(shot.getImage(), shot.getX(), shot.getY(), null);
+            }
+    	}
+    	
+
+        
+    }
+    
     public void Draw(Graphics2D g2d)
     {
         g2d.setColor(Color.white);
@@ -199,6 +239,7 @@ public class PlayerRocket extends Sprite{
         	g2d.drawString("Rocket 2 coordinates: "+ x +" : "+ y, Framework.frameWidth-180, 15);
         }
         
+        // 로켓의 상태 검사
         if(landed)
         {
         	g2d.drawImage(rocketLandedImg, x, y, null);
@@ -207,21 +248,38 @@ public class PlayerRocket extends Sprite{
         {
             g2d.drawImage(rocketCrashedImg, x, y + rocketImgHeight - rocketCrashedImg.getHeight(), null);
         }
-        else
+        else // 여기서 공격도 드로우 해주자.
         {
+        	drawShot(g2d);
+        	
             // If player hold down a W key we draw rocket fire.
             if(Canvas.keyboardKeyState(KeyEvent.VK_W) && Game.rocketNum == 1)
                 g2d.drawImage(rocketFireImg, x + 12, y + 66, null);
             if(Canvas.keyboardKeyState(KeyEvent.VK_UP) && Game.rocketNum == 2)
                 g2d.drawImage(rocketFireImg, x + 12, y + 66, null);
             g2d.drawImage(rocketImg, x, y, null);
+            
+            
         }
     }
 
 	public void KeyReleased(KeyEvent e) {
 		int key = e.getKeyCode();
+		
+		if(key == KeyEvent.VK_A) {			
+			x += 0;
+		}		
+		if(key == KeyEvent.VK_D) {			
+			x += 0;
+		}
+		if (key == KeyEvent.VK_W) {
+        	y += 0;
+        }		        
+	}
 
-        if (key == KeyEvent.VK_A) {
+	public void keyPressed(KeyEvent e) {
+		int key = e.getKeyCode();				
+		if (key == KeyEvent.VK_A) {
             x -= 2;
         }
 
@@ -231,23 +289,6 @@ public class PlayerRocket extends Sprite{
         
         if (key == KeyEvent.VK_W) {
         	y -= 2;
-        }
-	}
-
-	public void keyPressed(KeyEvent e) {
-		int key = e.getKeyCode();
-		
-		if(key == KeyEvent.VK_A) {
-			
-			x += 0;
-		}
-		
-		if(key == KeyEvent.VK_D) {
-			
-			x += 0;
-		}
-		if (key == KeyEvent.VK_W) {
-        	y += 0;
         }
 	}
 

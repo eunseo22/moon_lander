@@ -99,7 +99,6 @@ public class Framework extends Canvas {
                     game.UpdateGame(gameTime, mousePosition());                    
                     lastTime = System.nanoTime();
                     
-                  //  game.InitializeE(level);
                     
                 break;
                 case GAMEOVER:

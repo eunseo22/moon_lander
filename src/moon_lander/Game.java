@@ -40,7 +40,7 @@ public class Game extends JPanel {
 
     // 적 구현을 위한 변수
     private List<Alien> aliens;
-    private List<Shot> shots;
+    public static List<Shot> shots;
 	private Shot shot1, shot2; 
 	
 	private int direction = -1;
@@ -561,33 +561,38 @@ public class Game extends JPanel {
 		}
     }
     
-    private class TAdapterR1 extends KeyAdapter {       	
+    private class TAdapterR1 extends KeyAdapter {       // 로켓 1	
+    	@Override
+    	public void keyReleased(KeyEvent e) {    		
+    		playerRocket1.KeyReleased(e);
+    	} 
+    	
     	@Override
     	public void keyPressed(KeyEvent e) {    		
     		playerRocket1.keyPressed(e);    		
     		int x = playerRocket1.getX();
     		int y = playerRocket1.getY();
     		
-    		int key = e.getKeyCode();    		
-    		if (key == KeyEvent.VK_SPACE) {    			
+    		int key = e.getKeyCode();    	
+    		System.out.println("무언가 눌림");
+    		if (key == KeyEvent.VK_SPACE) {     	
+    			System.out.println("스페이스 바 눌림");
     			if(Framework.gameState == Framework.GameState.PLAYING) {
-    				Iterator<Shot> it = shots.iterator();   	
-        	    	while (it.hasNext()) {    		
-        	    		Shot s = it.next();
-        	    		if(!s.isVisible()) {
-        	    			s = new Shot(x,y);
-        	    		}
-        	    	}	
+    				Shot shot1 = shots.get(0);
+    				if(!shot1.isVisible()) {
+    					shot1 = new Shot(x,y);
+    					shots.set(0, shot1);
+    				}	
     		}}
     	}
-    	
-    	@Override
-    	public void keyReleased(KeyEvent e) {    		
-    		playerRocket1.KeyReleased(e);
-    	}  
     }
     
-    private class TAdapterR2 extends KeyAdapter {       	
+    private class TAdapterR2 extends KeyAdapter {     // 로켓 2  
+    	@Override
+    	public void keyReleased(KeyEvent e) {    		
+    		playerRocket2.KeyReleased(e);
+    	}  
+    	
     	@Override
     	public void keyPressed(KeyEvent e) {    		
     		playerRocket2.keyPressed(e);    		
@@ -595,7 +600,7 @@ public class Game extends JPanel {
     		int y = playerRocket2.getY();
     		
     		int key = e.getKeyCode();    		
-    		if (key == KeyEvent.VK_OPEN_BRACKET) {    			
+    		if (key == KeyEvent.VK_OPEN_BRACKET) {    	// [
     			if(Framework.gameState == Framework.GameState.PLAYING) {
     				Iterator<Shot> it = shots.iterator();   	
         	    	while (it.hasNext()) {    		
@@ -606,11 +611,7 @@ public class Game extends JPanel {
         	    	}	
     		}}
     	}
-    	
-    	@Override
-    	public void keyReleased(KeyEvent e) {    		
-    		playerRocket2.KeyReleased(e);
-    	}    	
+    		
     }
 
 

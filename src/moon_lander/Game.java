@@ -115,7 +115,7 @@ public class Game extends JPanel {
         try
         {
             URL backgroundImgUrl = this.getClass().getResource("/resources/images/background.jpg");
-            backgroundImg = ImageIO.read(backgroundImgUrl);
+            backgroundImg = ImageIO.read(backgroundImgUrl);            
             
             URL redBorderImgUrl = this.getClass().getResource("/resources/images/red_border.png");
             redBorderImg = ImageIO.read(redBorderImgUrl);
@@ -253,7 +253,7 @@ public class Game extends JPanel {
             					ImageIcon img = new ImageIcon(explImg);
             					alien.setImage(img.getImage());
             					alien.setDying(true);
-            					playerRocket1.alienKill++;
+            					playerRocket1.score += 30;
             					shots.get(i).die();
             		}}}
             		
@@ -344,7 +344,9 @@ public class Game extends JPanel {
             					ImageIcon img = new ImageIcon(explImg);
             					alien.setImage(img.getImage());
             					alien.setDying(true);
-            					playerRocket1.alienKill++;
+            					
+            					if(i==0) playerRocket1.score += 30;
+            					if(i==1) playerRocket2.score += 30;
             					shots.get(i).die();
             		}}}
             		
@@ -544,11 +546,25 @@ public class Game extends JPanel {
 		            g2d.drawString("You have crashed the rocket!", Framework.frameWidth / 2 - 90, Framework.frameHeight / 3);
 		            g2d.drawImage(redBorderImg, 0, 0, Framework.frameWidth, Framework.frameHeight, null);
 		        }
-				// 플레이어1의 점수를 띄워줌
+				
+				 g2d.setColor(Color.white);
+				 g2d.drawString("1P", Framework.frameWidth/3, Framework.frameHeight /3 +100);
+				 g2d.drawString("Score: " + playerRocket1.score, Framework.frameWidth/3, Framework.frameHeight /3 +130);
 			break;
 			case 2:
 				// 플레이어1과 2의 점수를 띄워줌
 				// 누가 이겼는지 표시해줌.
+				
+				 g2d.setColor(Color.white);
+				 g2d.drawString("1P", Framework.frameWidth/3, Framework.frameHeight /3 +100);
+				 g2d.drawString("Score: " + playerRocket1.score, Framework.frameWidth/3, Framework.frameHeight /3 +130);
+				 
+				 
+				 g2d.setColor(Color.white);
+				 g2d.drawString("2P", Framework.frameWidth/3 *2, Framework.frameHeight /3 +100);
+				 g2d.drawString("Score: " + playerRocket2.score, Framework.frameWidth /3*2, Framework.frameHeight /3 +130);
+				 ///
+				 
 				if(playerRocket1.landed)	
 		        {
 		            g2d.drawString("Rocket1 has successfully landed!", Framework.frameWidth / 2 - 100, Framework.frameHeight / 3);

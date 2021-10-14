@@ -17,7 +17,7 @@ public interface Params {
 	
 	int GO_DOWN = 15;
 	int NUMBER_OF_ALIENS_TO_DISPLAY = 10; 
-	int CHANCE = 1;					
+	int CHANCE = 3;					
 	int DELAY = 17;
 //	int PLAYER_WIDTH = 15;
 //	int PLAYER_HEIGHT = 10;

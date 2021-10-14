@@ -39,7 +39,6 @@ public class PlayerRocket extends Sprite{
     // 스코어 관리 위한 변수
     public boolean isWin = false;     
     public boolean isSurvives = false;
-    public int AsteroidKill = 0;
     public int alienKill = 0;
     public int score = 0;
     // 
@@ -129,6 +128,8 @@ public class PlayerRocket extends Sprite{
     
     public void Update()
     {
+    	
+    	
     	if(this.crashed) {
     		
     	} else if(this.landed) {
@@ -152,6 +153,7 @@ public class PlayerRocket extends Sprite{
                 
                 x += speedX;
                 y += speedY;
+                
                 
                 // 공격 개시!
                 if(Canvas.keyboardKeyState(KeyEvent.VK_OPEN_BRACKET)) {
@@ -237,6 +239,7 @@ public class PlayerRocket extends Sprite{
         
         // 로켓의 상태 검사
         if(isDying()) {
+        	
         	g2d.drawImage(this.getImage(), x, y, null);
         }
         if(landed)

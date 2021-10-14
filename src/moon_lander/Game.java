@@ -462,10 +462,35 @@ public class Game extends JPanel {
         if (playerRocket1.isDying()) {
 
             playerRocket1.die();
+            // 이미지 바껴라!
+            
+            
             if(rocketNum==1) Framework.gameState = Framework.GameState.GAMEOVER;
+        }
+        
+        if(rocketNum==2) {
+        	if (playerRocket2.isVisible()) {
+
+                g.drawImage(playerRocket2.getImage(), playerRocket2.getX(), playerRocket2.getY(), this);
+            }
+
+            if (playerRocket2.isDying()) {
+
+                playerRocket2.die();
+                // 이미지 바껴라!
+            }
+            
+            if(playerRocket1.isDying() && playerRocket2.isDying()) {
+            	Framework.gameState = Framework.GameState.GAMEOVER;
+            }
         }
     }
 	
+    
+    ImageIcon img = new ImageIcon(explImg);
+	alien.setImage(img.getImage());
+	alien.setDying(true);
+    
     private void drawShot(Graphics g) {
     	for(Shot s : shots) {
     		if (s!=null && s.isVisible()) {

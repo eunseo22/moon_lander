@@ -58,6 +58,7 @@ public class Game extends JPanel {
             @Override
             public void run(){
                 Initialize();
+                InitializeE(Framework.level);
                 LoadContent();
                 
                 Framework.gameState = Framework.GameState.PLAYING;
@@ -69,6 +70,12 @@ public class Game extends JPanel {
     
     private void Initialize()
     {
+    	shots = new ArrayList<>();
+    	shot1 = new Shot();		shot2 = new Shot();
+    	shots.add(shot1);		shots.add(shot2);
+    	
+    	aliens = new ArrayList<>();
+    	
     	addKeyListener(new TAdapterR1());
     	addKeyListener(new TAdapterR2());
     	
@@ -83,33 +90,21 @@ public class Game extends JPanel {
     }
     
     public void InitializeE(int level) {
-    	// 레벨 1: 소행성만. 
-        // 레벨 2: 소행성과 외계인 
-        // 레벨 3: 소행성과 외계인 - 갯수 늘고 스피드 빠르게
-    	shots = new ArrayList<>();
-    	shot1 = new Shot();		shot2 = new Shot();
-    	shots.add(shot1);		shots.add(shot2);
-    	
-		switch(level) {
-		case 1:
-			// 소행성도 생각해줘야 해.
-			break;
-		
-		case 2: case 3:
-			aliens = new ArrayList<>();
-			 for(int i=0; i<3; i++) {
-		        	for(int j=0; j<4; j++) {
-		        		int getRandomValue = ThreadLocalRandom.current().nextInt(150, 600) + 150;
-		        		Alien enemy = new Alien(getRandomValue + 60*j,  5 + 60*i);
-		        		// System.out.println(getRandomValue + "를 기반으로 " + (i+1)*(j+1) +"번째 enemy 생성 완료");
-		        		aliens.add(enemy);
-		        	}
-		       }  break;			
-		}
-		
-		if(level==3) {
-			// 난이도를 보다 더 높여줘야 해.
-		}    	
+    	int ii, jj;
+    	if(level == 1) {
+    		ii = 1; 	jj = 5;
+    	} else if(level == 2) {
+    		ii = 3; 	jj = 7;
+    	} else if(level == 3) {
+    		ii = 5; 	jj = 8;
+    	}
+		 for(int i=0; i<3; i++) {
+	        	for(int j=0; j<4; j++) {
+	        		int getRandomValue = ThreadLocalRandom.current().nextInt(150, 600) + 150;
+	        		Alien alien = new Alien(getRandomValue + 60*j,  5 + 60*i);
+	        		aliens.add(alien);
+	        	}
+	       } 
 	}
             
     private void LoadContent()

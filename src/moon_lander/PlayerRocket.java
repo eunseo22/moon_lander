@@ -116,7 +116,7 @@ public class PlayerRocket extends Sprite{
         LoadContent();
         
         x = random.nextInt(Framework.frameWidth - rocketImgWidth);
-        y = 10;
+        y = 5+ 60*3 ;
         
         speedX = 0;
         speedY = 0;

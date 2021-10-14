@@ -16,7 +16,8 @@ import javax.swing.JFrame;
 
 public class Framework extends Canvas {
     
-    public static int frameWidth;
+	private static final long serialVersionUID = 1L;
+	public static int frameWidth;
     public static int frameHeight;
     public static final long secInNanosec = 1000000000L;
     public static final long milisecInNanosec = 1000000L;
@@ -98,8 +99,7 @@ public class Framework extends Canvas {
                     game.UpdateGame(gameTime, mousePosition());                    
                     lastTime = System.nanoTime();
                     
-                    //                   // °í¹Î..
-                    game.InitializeE(level);
+                  //  game.InitializeE(level);
                     
                 break;
                 case GAMEOVER:
@@ -134,6 +134,8 @@ public class Framework extends Canvas {
                         lastVisualizingTime = System.nanoTime();
                     }
                 break;
+			default:
+				break;
             }
             
             // Repaint the screen.
@@ -176,6 +178,7 @@ public class Framework extends Canvas {
     public void Draw(Graphics2D g2d)
     {
     	DrawButtonForLevel();
+    	
     	
         switch (gameState)
         {

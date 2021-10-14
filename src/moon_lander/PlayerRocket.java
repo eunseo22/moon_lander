@@ -44,10 +44,6 @@ public class PlayerRocket extends Sprite{
     public int score = 0;
     // 
     
-    // 총알 발사 위한 변수
-    private Game game;
-    
-    
     
     
     public PlayerRocket()
@@ -240,6 +236,9 @@ public class PlayerRocket extends Sprite{
         }
         
         // 로켓의 상태 검사
+        if(isDying()) {
+        	g2d.drawImage(this.getImage(), x, y, null);
+        }
         if(landed)
         {
         	g2d.drawImage(rocketLandedImg, x, y, null);

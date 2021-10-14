@@ -47,7 +47,8 @@ public class Game extends JPanel {
     private int whoWin;   // 누구든 이긴 사람이 나와야 함. 살아남앗니? -> 점수가 누가 더 높니?
     					// 이 변수 어디에 쓰이는지 고민해봐야 해.
     
-    private String explImg = "./src/resources/images/Sprite/explosion2.png";
+    private String explImg = "./resources/images/sprite/explosion2.png";
+    
     
     
     public Game()
@@ -74,10 +75,7 @@ public class Game extends JPanel {
     	shot1 = new Shot();		shot2 = new Shot();
     	shots.add(shot1);		shots.add(shot2);
     	
-    	aliens = new ArrayList<>();
-    	
-    	addKeyListener(new TAdapterR1());
-    	addKeyListener(new TAdapterR2());
+    	aliens = new ArrayList<>();    	
     	
     	rocketNum = 1;			
     	playerRocket1 = new PlayerRocket();
@@ -487,18 +485,7 @@ public class Game extends JPanel {
     }
 	
     
-    ImageIcon img = new ImageIcon(explImg);
-	alien.setImage(img.getImage());
-	alien.setDying(true);
-    
-    private void drawShot(Graphics g) {
-    	for(Shot s : shots) {
-    		if (s!=null && s.isVisible()) {
 
-                g.drawImage(s.getImage(), s.getX(), s.getY(), this);
-            }
-    	}
-    }
 
     private void drawBombing(Graphics g) {
 
@@ -529,7 +516,6 @@ public class Game extends JPanel {
         
         
         drawPlayer(g2d);
-    	drawShot(g2d);
     	drawBombing(g2d);
     	
         if(Framework.level != 1) {
@@ -586,59 +572,5 @@ public class Game extends JPanel {
 		}
     }
     
-    private class TAdapterR1 extends KeyAdapter {       // 로켓 1	
-    	@Override
-    	public void keyReleased(KeyEvent e) {    		
-    		playerRocket1.KeyReleased(e);
-    	} 
-    	
-    	@Override
-    	public void keyPressed(KeyEvent e) {    		
-    		playerRocket1.keyPressed(e);    		
-    		int x = playerRocket1.getX();
-    		int y = playerRocket1.getY();
-    		
-    		int key = e.getKeyCode();    	
-    		System.out.println("무언가 눌림");
-    		if (key == KeyEvent.VK_SPACE) {     	
-    			System.out.println("스페이스 바 눌림");
-    			if(Framework.gameState == Framework.GameState.PLAYING) {
-    				Shot shot1 = shots.get(0);
-    				if(!shot1.isVisible()) {
-    					shot1 = new Shot(x,y);
-    					shots.set(0, shot1);
-    				}	
-    		}}
-    	}
-    }
-    
-    private class TAdapterR2 extends KeyAdapter {     // 로켓 2  
-    	@Override
-    	public void keyReleased(KeyEvent e) {    		
-    		playerRocket2.KeyReleased(e);
-    	}  
-    	
-    	@Override
-    	public void keyPressed(KeyEvent e) {    		
-    		playerRocket2.keyPressed(e);    		
-    		int x = playerRocket2.getX();
-    		int y = playerRocket2.getY();
-    		
-    		int key = e.getKeyCode();    		
-    		if (key == KeyEvent.VK_OPEN_BRACKET) {    	// [
-    			if(Framework.gameState == Framework.GameState.PLAYING) {
-    				Iterator<Shot> it = shots.iterator();   	
-        	    	while (it.hasNext()) {    		
-        	    		Shot s = it.next();
-        	    		if(!s.isVisible()) {
-        	    			s = new Shot(x,y);
-        	    		}
-        	    	}	
-    		}}
-    	}
-    		
-    }
 
-
-	
 }

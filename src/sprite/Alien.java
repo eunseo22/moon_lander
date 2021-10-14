@@ -44,7 +44,6 @@ public class Alien extends Sprite {
 		private void initBomb(int x, int y) {
 			
 			setDestroyed(true);
-			
 			this.x = x;
 			this.y = y;
 			
@@ -54,12 +53,10 @@ public class Alien extends Sprite {
 		}
 		
         public void setDestroyed(boolean destroyed) {
-
             this.destroyed = destroyed;
         }
 
         public boolean isDestroyed() {
-
             return destroyed;
         }
 		

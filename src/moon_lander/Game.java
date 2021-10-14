@@ -11,7 +11,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,6 +21,7 @@ import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
@@ -33,12 +36,12 @@ public class Game extends JPanel {
     private BufferedImage backgroundImg;
     private BufferedImage redBorderImg;
     
-    // 1p인지 2p인지 표시 & 2p일 때 각각의 로켓을 구분?
     public static int rocketNum = 1;
 
     // 적 구현을 위한 변수
     private List<Alien> aliens;
-	private Shot shot; 
+    private List<Shot> shots;
+	private Shot shot1, shot2; 
 	
 	private int direction = -1;
     private int whoWin;   // 누구든 이긴 사람이 나와야 함. 살아남앗니? -> 점수가 누가 더 높니?
@@ -83,8 +86,9 @@ public class Game extends JPanel {
     	// 레벨 1: 소행성만. 
         // 레벨 2: 소행성과 외계인 
         // 레벨 3: 소행성과 외계인 - 갯수 늘고 스피드 빠르게
-    	
-    	shot = new Shot();
+    	shots = new ArrayList<>();
+    	shot1 = new Shot();		shot2 = new Shot();
+    	shots.add(shot1);		shots.add(shot2);
     	
 		switch(level) {
 		case 1:
@@ -240,151 +244,211 @@ public class Game extends JPanel {
     private void InteractionOfEP(int level) {
     	if(Framework.playerCnt==1) {
     		if(level==1) {
+    			//
     			
-    		} else {
+    		} else {  // 1p- level 2,3
+    			for(int i=0; i<1; i++) {
+            		if (shots.get(i) != null && shots.get(i).isVisible()) {    		// -> 플레이어가 alien을 쏴서 죽였을 때의 상황
+                		int shotX = shots.get(i).getX();
+                		int shotY = shots.get(i).getY();    		
+                		for (Alien alien : aliens) {    			
+                			int alienX = alien.getX();
+                			int alienY = alien.getY();    			
+                			if(alien.isVisible() && shots.get(i).isVisible()) {
+                				if (shotX >= (alienX) && shotX <= (alienX + Params.ALIEN_WIDTH)
+                					&& shotY >= (alienY) && shotY <= (alienY + Params.ALIEN_HEIGHT)) {    					
+                					ImageIcon img = new ImageIcon(explImg);
+                					alien.setImage(img.getImage());
+                					alien.setDying(true);
+                					playerRocket1.alienKill++;
+                					shots.get(i).die();
+                		}}}
+                		
+                		int y = shots.get(i).getY();	y-=4;
+                		if (y<0) { shots.get(i).die(); } 
+                		else { shots.get(i).setY(y); }
+                		
+                	} // end if(shot1.isVisible()) 
+            	}
+    			
+    			for (Alien alien : aliens) {    // -> alien의 x값 check
+    				if(alien == null) continue;
+    	    		int x = alien.getX();    		
+    	    		if (x >= Params.BOARD_WIDTH - Params.BORDER_RIGHT && direction != -1) {    			
+    	                direction = -1;
+    	                Iterator<Alien> i1 = aliens.iterator();
+    	                while (i1.hasNext()) {
+    	                    Alien a2 = i1.next();
+    	                    a2.setY(a2.getY() + Params.GO_DOWN);
+    	                }
+    	            }
+    	    		
+    	    		if (x <= Params.BORDER_LEFT && direction != 1) {    			
+    	    			direction = 1;    			
+    	    			Iterator<Alien> i2 = aliens.iterator();    			
+    	    			while (i2.hasNext()) {    				
+    	    				Alien a = i2.next();
+    	    				a.setY(a.getY() + Params.GO_DOWN);
+    	    			}
+    	    		}
+    	    	} // end for (Alien alien : aliens)
+    	    	
+    	    	Iterator<Alien> it = aliens.iterator();   // -> alien의 y값 check    	
+    	    	while (it.hasNext()) {    		
+    	    		Alien alien = it.next();    		
+    	    		if (alien.isVisible()) {    			
+    	    			int y = alien.getY();    			
+    	    			if (y > Params.GROUND - Params.ALIEN_HEIGHT) {    	
+    	    				Framework.gameState = Framework.GameState.GAMEOVER;
+    	    			}    			
+    	    			alien.act(direction);
+    	    		}
+    	    	} // end while (it.hasNext())
+    	    	
+    	    	Random generator = new Random();    	
+    	    	for(Alien alien : aliens) {    		 // -> bomb 위치 재조정    	
+    	    		int shot = generator.nextInt(15);
+    	    		Alien.Bomb bomb = alien.getBomb();    		
+    	    		if (shot == Params.CHANCE && alien.isVisible() && bomb.isDestroyed()) {    // alien 살아있고 bomb도 살아있다면..?			
+    	    			bomb.setDestroyed(false); 
+    	    			bomb.setX(alien.getX());   // bomb 위치 재조정
+    	    			bomb.setY(alien.getY());    			
+    	    		}
+    	    		
+    	    		int bombX = bomb.getX();
+    	    		int bombY = bomb.getY();
+    	    		int playerX = playerRocket1.getX();
+    	    		int playerY = playerRocket1.getY();
+    	    		
+    	    		if (playerRocket1.isVisible() && !bomb.isDestroyed()) {    // 플레이어가 밤에 맞아 죽었을 경우..			
+    	    			if(bombX >=(playerX) && bombX <= (playerX + playerRocket1.rocketImgWidth)
+    	    				&& bombY >= (playerY) && bombY <= (playerY + playerRocket1.rocketImgHeight)) {
+    	    				ImageIcon img = new ImageIcon(explImg);
+    	    				playerRocket1.setImage(img.getImage());
+    	    				playerRocket1.setDying(true);
+    	    				bomb.setDestroyed(true);    				
+    	    		} }
+    	    		
+    	    		if (!bomb.isDestroyed()) {    			
+    	    			bomb.setY(bomb.getY() + 1);    			
+    	    			if (bomb.getY() >= Params.GROUND - Params.BOMB_HEIGHT) {    				
+    	    				bomb.setDestroyed(true);
+    	    		} }
+    	    	} // end for(Alien alien : aliens) 
     			
     		}
+    		
     	} else {  // 2인용...
-    		if(level==1) {
-    			
-    		} else {
-    			
-    	}
-    	if (shot.isVisible()) {
-    		
-    		int shotX = shot.getX();
-    		int shotY = shot.getY();
-    		
-    		for (Alien alien : aliens) {
-    			
-    			int alienX = alien.getX();
-    			int alienY = alien.getY();
-    			
-    			if(alien.isVisible() && shot.isVisible()) {
-    				if (shotX >= (alienX)
-    						&& shotX <= (alienX + Params.ALIEN_WIDTH)
-    						&& shotY >= (alienY)
-    						&& shotY <= (alienY + Params.ALIEN_HEIGHT)) {
-    					
-    					var img = new ImageIcon(explImg);
-    					alien.setImage(img.getImage());
-    					alien.setDying(true);
-    					deaths++;
-    					shot.die();
-    				}
-    			}
-    		}
-    		
-    		int y = shot.getY();
-    		y-=4;
-    		
-    		if (y<0) {
-    			shot.die();
-    		} else {
-    			shot.setY(y);
-    		}
-    	}
-    	
-    	for (Alien alien : aliens) {
-    		
-    		int x = alien.getX();
-    		
-    		if (x >= Params.BOARD_WIDTH - Params.BORDER_RIGHT && direction != -1) {
-    			
-                direction = -1;
-
-                Iterator<Alien> i1 = aliens.iterator();
-
-                while (i1.hasNext()) {
-
-                    Alien a2 = i1.next();
-                    a2.setY(a2.getY() + Params.GO_DOWN);
-                }
-            }
-    		
-    		if (x <= Params.BORDER_LEFT && direction != 1) {
-    			
-    			direction = 1;
-    			
-    			Iterator<Alien> i2 = aliens.iterator();
-    			
-    			while (i2.hasNext()) {
-    				
-    				Alien a = i2.next();
-    				a.setY(a.getY() + Params.GO_DOWN);
-    			}
-    		}
-    	}
-    	
-    	Iterator<Alien> it = aliens.iterator();
-    	
-    	while (it.hasNext()) {
-    		
-    		Alien alien = it.next();
-    		
-    		if (alien.isVisible()) {
-    			
-    			int y = alien.getY();
-    			
-    			if (y > Params.GROUND - Params.ALIEN_HEIGHT) {
-    				
-    				inGame = false;
-    				message = "Invasion!";
-    			}
-    			
-    			alien.act(direction);
-    		}
-    	}
-    	
-    	var generator = new Random();
-    	
-    	for(Alien alien : aliens) {
-    		
-    		int shot = generator.nextInt(15);
-    		Alien.Bomb bomb = alien.getBomb();
-    		
-    		if (shot == Params.CHANCE && alien.isVisible() && bomb.isDestroyed()) {
-    			
-    			bomb.setDestroyed(false);
-    			bomb.setX(alien.getX());
-    			bomb.setY(alien.getY());
-    			
-    		}
-    		
-    		int bombX = bomb.getX();
-    		int bombY = bomb.getY();
-    		int playerX = player.getX();
-    		int playerY = player.getY();
-    		
-    		if (player.isVisible() && !bomb.isDestroyed()) {
-    			
-    			if(bombX >=(playerX)
-    					&& bombX <= (playerX + Params.PLAYER_WIDTH)
-    					&& bombY >= (playerY)
-    					&& bombY <= (playerY + Params.PLAYER_HEIGHT)) {
-    				
-    				var img = new ImageIcon(explImg);
-    				player.setImage(img.getImage());
-    				player.setDying(true);
-    				bomb.setDestroyed(true);
-    				
-    			}
-    		}
-    		
-    		if (!bomb.isDestroyed()) {
-    			
-    			bomb.setY(bomb.getY() + 1);
-    			
-    			if (bomb.getY() >= Params.GROUND - Params.BOMB_HEIGHT) {
-    				
-    				bomb.setDestroyed(true);
-    			}
-    		}
-    		
-    		
-    	}
+	    	if(level==1) {
+	    		//
+	    		
+	    	}
+	    	
+	    	if(level == 2 || level == 3) {   // 2p- level 2,3
+	    		
+	    		for(int i=0; i<2; i++) {
+	        		if (shots.get(i) != null && shots.get(i).isVisible()) {    		// -> 플레이어가 alien을 쏴서 죽였을 때의 상황
+	            		int shotX = shots.get(i).getX();
+	            		int shotY = shots.get(i).getY();    		
+	            		for (Alien alien : aliens) {    			
+	            			int alienX = alien.getX();
+	            			int alienY = alien.getY();    			
+	            			if(alien.isVisible() && shots.get(i).isVisible()) {
+	            				if (shotX >= (alienX) && shotX <= (alienX + Params.ALIEN_WIDTH)
+	            					&& shotY >= (alienY) && shotY <= (alienY + Params.ALIEN_HEIGHT)) {    					
+	            					ImageIcon img = new ImageIcon(explImg);
+	            					alien.setImage(img.getImage());
+	            					alien.setDying(true);
+	            					playerRocket1.alienKill++;
+	            					shots.get(i).die();
+	            		}}}
+	            		
+	            		int y = shots.get(i).getY();	y-=4;
+	            		if (y<0) { shots.get(i).die(); } 
+	            		else { shots.get(i).setY(y); }
+	            		
+	            	} // end if(shot1.isVisible()) 
+	        	}
+	    		
+	    		for (Alien alien : aliens) {    // -> alien의 x값 check
+	    			if(alien == null) continue;
+		    		int x = alien.getX();    		
+		    		if (x >= Params.BOARD_WIDTH - Params.BORDER_RIGHT && direction != -1) {    			
+		                direction = -1;
+		                Iterator<Alien> i1 = aliens.iterator();
+		                while (i1.hasNext()) {
+		                    Alien a2 = i1.next();
+		                    a2.setY(a2.getY() + Params.GO_DOWN);
+		                }
+		            }
+		    		
+		    		if (x <= Params.BORDER_LEFT && direction != 1) {    			
+		    			direction = 1;    			
+		    			Iterator<Alien> i2 = aliens.iterator();    			
+		    			while (i2.hasNext()) {    				
+		    				Alien a = i2.next();
+		    				a.setY(a.getY() + Params.GO_DOWN);
+		    			}
+		    		}
+		    	} // end for (Alien alien : aliens)
+		    	
+		    	Iterator<Alien> it = aliens.iterator();   // -> alien의 y값 check    	
+		    	while (it.hasNext()) {    		
+		    		Alien alien = it.next();    		
+		    		if (alien.isVisible()) {    			
+		    			int y = alien.getY();    			
+		    			if (y > Params.GROUND - Params.ALIEN_HEIGHT) {    	
+		    				Framework.gameState = Framework.GameState.GAMEOVER;
+		    			}    			
+		    			alien.act(direction);
+		    		}
+		    	} // end while (it.hasNext())
+		    	
+	    	}
+	    	
+	    	Random generator = new Random();    	
+	    	for(Alien alien : aliens) {    		 // -> bomb 위치 재조정    	
+	    		int shot = generator.nextInt(15);
+	    		Alien.Bomb bomb = alien.getBomb();    		
+	    		if (shot == Params.CHANCE && alien.isVisible() && bomb.isDestroyed()) {    // alien 살아있고 bomb도 살아있다면..?			
+	    			bomb.setDestroyed(false); 
+	    			bomb.setX(alien.getX());   // bomb 위치 재조정
+	    			bomb.setY(alien.getY());    			
+	    		}
+	    		
+	    		int bombX = bomb.getX();
+	    		int bombY = bomb.getY();
+	    		int playerX = playerRocket1.getX();
+	    		int playerY = playerRocket1.getY();
+	    		
+	    		if (playerRocket1.isVisible() && !bomb.isDestroyed()) {    // 플레이어가 밤에 맞아 죽었을 경우..			
+	    			if(bombX >=(playerX) && bombX <= (playerX + playerRocket1.rocketImgWidth)
+	    				&& bombY >= (playerY) && bombY <= (playerY + playerRocket1.rocketImgHeight)) {
+	    				ImageIcon img = new ImageIcon(explImg);
+	    				playerRocket1.setImage(img.getImage());
+	    				playerRocket1.setDying(true);
+	    				bomb.setDestroyed(true);    				
+	    		} }
+	    		
+	    		if (playerRocket2.isVisible() && !bomb.isDestroyed()) {    // 플레이어가 밤에 맞아 죽었을 경우..			
+	    			if(bombX >=(playerX) && bombX <= (playerX + playerRocket2.rocketImgWidth)
+	    				&& bombY >= (playerY) && bombY <= (playerY + playerRocket2.rocketImgHeight)) {
+	    				ImageIcon img = new ImageIcon(explImg);
+	    				playerRocket2.setImage(img.getImage());
+	    				playerRocket2.setDying(true);
+	    				bomb.setDestroyed(true);    				
+	    		} }
+	    		
+	    		if (!bomb.isDestroyed()) {    			
+	    			bomb.setY(bomb.getY() + 1);    			
+	    			if (bomb.getY() >= Params.GROUND - Params.BOMB_HEIGHT) {    				
+	    				bomb.setDestroyed(true);
+	    		} }
+	    	} // end for(Alien alien : aliens) 
+	    	
+	    	
+    	}	
 	}
-
 
 	private void drawAliens(Graphics g) {
 
@@ -415,11 +479,12 @@ public class Game extends JPanel {
     }
 	
     private void drawShot(Graphics g) {
+    	for(Shot s : shots) {
+    		if (s!=null && s.isVisible()) {
 
-        if (shot.isVisible()) {
-
-            g.drawImage(shot.getImage(), shot.getX(), shot.getY(), this);
-        }
+                g.drawImage(s.getImage(), s.getX(), s.getY(), this);
+            }
+    	}
     }
 
     private void drawBombing(Graphics g) {
@@ -518,9 +583,14 @@ public class Game extends JPanel {
     		int key = e.getKeyCode();    		
     		if (key == KeyEvent.VK_SPACE) {    			
     			if(Framework.gameState == Framework.GameState.PLAYING) {
-    				if (!shot.isVisible()) {
-    					shot = new Shot(x, y);
-    		}}}
+    				Iterator<Shot> it = shots.iterator();   	
+        	    	while (it.hasNext()) {    		
+        	    		Shot s = it.next();
+        	    		if(!s.isVisible()) {
+        	    			s = new Shot(x,y);
+        	    		}
+        	    	}	
+    		}}
     	}
     	
     	@Override
@@ -539,9 +609,14 @@ public class Game extends JPanel {
     		int key = e.getKeyCode();    		
     		if (key == KeyEvent.VK_OPEN_BRACKET) {    			
     			if(Framework.gameState == Framework.GameState.PLAYING) {
-    				if (!shot.isVisible()) {
-    					shot = new Shot(x, y);
-    		}}}
+    				Iterator<Shot> it = shots.iterator();   	
+        	    	while (it.hasNext()) {    		
+        	    		Shot s = it.next();
+        	    		if(!s.isVisible()) {
+        	    			s = new Shot(x,y);
+        	    		}
+        	    	}	
+    		}}
     	}
     	
     	@Override

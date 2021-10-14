@@ -37,7 +37,9 @@ public class PlayerRocket extends Sprite{
     // 스코어 관리 위한 변수
     public boolean isWin = false;     
     public boolean isSurvives = false;
-    public int kill = 0;
+    public int AsteroidKill = 0;
+    public int alienKill = 0;
+    public int score = 0;
     // 
     
     public PlayerRocket()

@@ -44,8 +44,7 @@ public class Game extends JPanel {
 	private Shot shot1, shot2; 
 	
 	private int direction = -1;
-    private int whoWin;   // 누구든 이긴 사람이 나와야 함. 살아남앗니? -> 점수가 누가 더 높니?
-    					// 이 변수 어디에 쓰이는지 고민해봐야 해.
+    private String message="";
     
     private String explImg = "./resources/images/sprite/explosion2.png";
     
@@ -564,6 +563,17 @@ public class Game extends JPanel {
 				 g2d.drawString("2P", Framework.frameWidth/3 *2, Framework.frameHeight /3 +100);
 				 g2d.drawString("Score: " + playerRocket2.score, Framework.frameWidth /3*2, Framework.frameHeight /3 +130);
 				 ///
+				 
+				 if(playerRocket1.score > playerRocket2.score) {
+					 message = "Player 1 won!"; 
+				 } else if(playerRocket1.score == playerRocket2.score) {
+					 message = "End in a tie."; 
+				 } else{
+					 message = "Player 2 won!"; ;
+				 }
+				 
+				 g2d.drawString(message, Framework.frameWidth/2 - 40, Framework.frameHeight /3 +100);
+				 
 				 
 				if(playerRocket1.landed)	
 		        {

@@ -27,7 +27,8 @@ public class LandingArea {
     
     private void Initialize()
     {   
-    	int random = (int) ((Math.random() * (Params.BOARD_WIDTH-landingAreaImgWidth - landingAreaImgWidth)) + landingAreaImgWidth);
+    	int random = (int) ((Math.random() * (Params.BOARD_WIDTH-landingAreaImgWidth) + 5)) ;
+    	
         x = random;
         //x = (int)(Framework.frameWidth * 0.46);
         y = (int)(Framework.frameHeight * 0.88);

@@ -1,50 +1,56 @@
 package moon_lander;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JPanel;
 
-/**
- * Actual game.
- * 
- * @author www.gametutorial.net
- */
+import sprite.Alien;
+import sprite.Shot;
 
-public class Game {
+public class Game extends JPanel {
 
-    /**
-     * The space rocket with which player will have to land.
-     */
+    
     private PlayerRocket playerRocket1, playerRocket2;
-    
-    /**
-     * Landing area on which rocket will have to land.
-     */
     private LandingArea landingArea;
-    
-    /**
-     * Game background image.
-     */
     private BufferedImage backgroundImg;
-    
-    /**
-     * Red border of the frame. It is used when player crash the rocket.
-     */
     private BufferedImage redBorderImg;
     
     public static int rocketNum = 1;
 
+    // 적 구현을 위한 변수
+    private List<Alien> aliens;
+    public static List<Shot> shots;
+	private Shot shot1, shot2; 
+	
+	private int direction = -1;
+    private int whoWin;   // 누구든 이긴 사람이 나와야 함. 살아남앗니? -> 점수가 누가 더 높니?
+    					// 이 변수 어디에 쓰이는지 고민해봐야 해.
+    
+    private String explImg = "./resources/images/sprite/explosion2.png";
+    
+    
+    
     public Game()
     {
         Framework.gameState = Framework.GameState.GAME_CONTENT_LOADING;
@@ -52,9 +58,8 @@ public class Game {
         Thread threadForInitGame = new Thread() {
             @Override
             public void run(){
-                // Sets variables and objects for the game.
                 Initialize();
-                // Load game files (images, sounds, ...)
+                InitializeE(Framework.level, Framework.playerCnt);
                 LoadContent();
                 
                 Framework.gameState = Framework.GameState.PLAYING;
@@ -64,29 +69,47 @@ public class Game {
     }
     
     
-   /**
-     * Set variables and objects for the game.
-     */
     private void Initialize()
     {
-    	switch(Framework.playerCnt) {
-    		case 1:
-    			rocketNum = 1;
-    			playerRocket1 = new PlayerRocket();
-    		break;
-    		case 2:
-    			rocketNum = 1;
-    			playerRocket1 = new PlayerRocket();
-    			rocketNum = 2;
-    			playerRocket2 = new PlayerRocket();
-    		break;
+    	shots = new ArrayList<>();
+    	shot1 = new Shot();		shot2 = new Shot();
+    	shots.add(shot1);		shots.add(shot2);
+    	
+    	aliens = new ArrayList<>();    	
+    	
+    	rocketNum = 1;			
+    	playerRocket1 = new PlayerRocket();
+    	
+    	if(Framework.playerCnt == 2) {
+    		rocketNum = 2;			
+    		playerRocket2 = new PlayerRocket();
     	}
         landingArea  = new LandingArea();
     }
     
-    /**
-     * Load game files - images, sounds, ...
-     */
+    public void InitializeE(int level, int playerNum) {
+    	int ii = 0, jj = 0;        // 레벨에 따라 나타나는 적의 갯수를 달리함. // ii*jj 개임
+    	if(level == 1) {
+    		ii = 4; 	jj = 5;
+    	} else if(level == 2) {
+    		ii = 3; 	jj = 7;
+    	} else if(level == 3) {
+    		ii = 4; 	jj = 7;
+    	}
+    	
+    	if(playerNum == 2) {
+    		jj*=2;
+    	}
+		 for(int i=0; i<ii; i++) {
+	        	for(int j=0; j<jj; j++) {
+	        		int getRandomValue = ThreadLocalRandom.current().nextInt(150, 600) + 150;
+	        		Alien alien = new Alien(getRandomValue + 60*j,  5 + 60*i);
+	        		aliens.add(alien);
+	        	}
+	       } 
+	}
+    
+    
     private void LoadContent()
     {
         try
@@ -117,54 +140,36 @@ public class Game {
     }
     
     
-    /**
-     * Restart game - reset some variables.
-     */
     public void RestartGame()
     {
-    	switch(Framework.playerCnt) {
-			case 1:
-				rocketNum = 1;
-				playerRocket1.ResetPlayer();
-			break;
-			case 2:
-				if(playerRocket2==null) {
-					rocketNum = 1;
-					playerRocket1.ResetPlayer();
-					rocketNum = 2;
-					playerRocket2 = new PlayerRocket();
-				} else {
-					rocketNum = 1;
-					playerRocket1.ResetPlayer();
-					rocketNum = 2;
-					playerRocket2.ResetPlayer();
-				}
-			break;
-		}
+    	rocketNum = 1;			
+    	playerRocket1 = new PlayerRocket();
+    	
+    	if(Framework.playerCnt == 2) {
+    		rocketNum = 2;
+    		playerRocket1.ResetPlayer();
+    		
+    		if(playerRocket2 == null) {    			
+    			playerRocket2 = new PlayerRocket();    			
+    		} else {    			
+    			playerRocket2.ResetPlayer();
+    		}  
+    	}
     }
     
     
-    /**
-     * Update game logic.
-     * 
-     * @param gameTime gameTime of the game.
-     * @param mousePosition current mouse position.
-     */
     public void UpdateGame(long gameTime, Point mousePosition)
     {
     	switch(Framework.playerCnt) {
-    		case 1:
-    			// Move the rocket
+    		case 1:  // 1인용
     	        playerRocket1.Update();
     	        
-    	        // Checks where the player rocket is. Is it still in the space or is it landed or crashed?
-    	        // First we check bottom y coordinate of the rocket if is it near the landing area.
+    	        InteractionOfEP(Framework.level);
+    	        
     	        if(playerRocket1.y + playerRocket1.rocketImgHeight - 10 > landingArea.y)
     	        {
-    	            // Here we check if the rocket is over landing area.
     	            if((playerRocket1.x > landingArea.x) && (playerRocket1.x < landingArea.x + landingArea.landingAreaImgWidth - playerRocket1.rocketImgWidth))
     	            {
-    	                // Here we check if the rocket speed isn't too high.
     	                if(playerRocket1.speedY <= playerRocket1.topLandingSpeed)
     	                    playerRocket1.landed = true;
     	                else
@@ -176,21 +181,16 @@ public class Game {
     	            Framework.gameState = Framework.GameState.GAMEOVER;
     	        }
     	    break;
-    		case 2:
-    			// Move the rocket
+    		case 2:  // 2인용
     			rocketNum = 1;
 				playerRocket1.Update();
 				rocketNum = 2;
 		        playerRocket2.Update();
 		        
-		        // Checks where the player rocket 1 is. Is it still in the space or is it landed or crashed?
-		        // First we check bottom y coordinate of the rocket if is it near the landing area.
 		        if(playerRocket1.y + playerRocket1.rocketImgHeight - 10 > landingArea.y)
 		        {
-		            // Here we check if the rocket is over landing area.
 		            if((playerRocket1.x > landingArea.x) && (playerRocket1.x < landingArea.x + landingArea.landingAreaImgWidth - playerRocket1.rocketImgWidth))
 		            {
-		                // Here we check if the rocket speed isn't too high.
 		                if(playerRocket1.speedY <= playerRocket1.topLandingSpeed)
 		                    playerRocket1.landed = true;
 		                else
@@ -199,13 +199,12 @@ public class Game {
 		            else
 		                playerRocket1.crashed = true;
 		        }
+		        
 		        // Checks where the player rocket 2 is.
 		        if(playerRocket2.y + playerRocket2.rocketImgHeight - 10 > landingArea.y)
 		        {
-		            // Here we check if the rocket is over landing area.
 		            if((playerRocket2.x > landingArea.x) && (playerRocket2.x < landingArea.x + landingArea.landingAreaImgWidth - playerRocket2.rocketImgWidth))
 		            {
-		                // Here we check if the rocket speed isn't too high.
 		                if(playerRocket2.speedY <= playerRocket2.topLandingSpeed)
 		                    playerRocket2.landed = true;
 		                else
@@ -215,50 +214,317 @@ public class Game {
 		                playerRocket2.crashed = true;
 		        }
 		        
-		        if(playerRocket1.crashed && playerRocket2.crashed) {
+		        if(playerRocket1.crashed && playerRocket2.crashed) {		        	
 		        	Framework.gameState = Framework.GameState.GAMEOVER;
-		        } else if(playerRocket1.landed) {
+		        	
+		        } else if(playerRocket1.landed && playerRocket2.crashed) {	
+		        	playerRocket1.isSurvives=true;  
 		        	Framework.gameState = Framework.GameState.GAMEOVER;
-		        } else if(playerRocket2.landed) {
+		        	
+		        } else if(playerRocket2.landed && playerRocket1.crashed) {
+		        	playerRocket2.isSurvives=true;
+		        	Framework.gameState = Framework.GameState.GAMEOVER;
+		        	
+		        } else if(playerRocket1.landed && playerRocket2.landed) {
+		        	playerRocket1.isSurvives=true; 
+		        	playerRocket2.isSurvives=true;
 		        	Framework.gameState = Framework.GameState.GAMEOVER;
 		        }
+		        // 점수 계산..
+		        InteractionOfEP(Framework.level);
+			       // 고민 포인트: 1p 2p 구분은..위의 함수 하나에서 할까, 아니면 함수 하나를 더 만들까?
     	}
     }
     
-    /**
-     * Draw the game to the screen.
-     * 
-     * @param g2d Graphics2D
-     * @param mousePosition current mouse position.
-     */
+
+    
+    private void InteractionOfEP(int level) {
+    	if(Framework.playerCnt==1) { // 1인용
+    		for(int i=0; i<1; i++) {
+        		if (shots.get(i) != null && shots.get(i).isVisible()) {    		// -> 플레이어가 alien을 쏴서 죽였을 때의 상황
+            		int shotX = shots.get(i).getX();
+            		int shotY = shots.get(i).getY();    		
+            		for (Alien alien : aliens) {    			
+            			int alienX = alien.getX();
+            			int alienY = alien.getY();    			
+            			if(alien.isVisible() && shots.get(i).isVisible()) {
+            				if (shotX >= (alienX) && shotX <= (alienX + Params.ALIEN_WIDTH)
+            					&& shotY >= (alienY) && shotY <= (alienY + Params.ALIEN_HEIGHT)) {    					
+            					ImageIcon img = new ImageIcon(explImg);
+            					alien.setImage(img.getImage());
+            					alien.setDying(true);
+            					playerRocket1.alienKill++;
+            					shots.get(i).die();
+            		}}}
+            		
+            		int y = shots.get(i).getY();	y-=4;
+            		if (y<0) { shots.get(i).die(); } 
+            		else { shots.get(i).setY(y); }
+            		
+            	} // end if(shot1.isVisible()) 
+        	} // 사실 포문 없어도 됨. 1인용이라서. shots.get(i)를 유지하기 위해서임.
+			
+			for (Alien alien : aliens) {    // -> alien의 x값 check
+				if(alien == null) continue;
+	    		int x = alien.getX();    		
+	    		if (x >= Params.BOARD_WIDTH - Params.BORDER_RIGHT && direction != -1) {    			
+	                direction = -1;
+	                Iterator<Alien> i1 = aliens.iterator();
+	                while (i1.hasNext()) {
+	                    Alien a2 = i1.next();
+	                    a2.setY(a2.getY() + Params.GO_DOWN);
+	                }
+	            }
+	    		
+	    		if (x <= Params.BORDER_LEFT && direction != 1) {    			
+	    			direction = 1;    			
+	    			Iterator<Alien> i2 = aliens.iterator();    			
+	    			while (i2.hasNext()) {    				
+	    				Alien a = i2.next();
+	    				a.setY(a.getY() + Params.GO_DOWN);
+	    			}
+	    		}
+	    	} // end for (Alien alien : aliens)
+	    	
+	    	Iterator<Alien> it = aliens.iterator();   // -> alien의 y값 check    	
+	    	while (it.hasNext()) {    		
+	    		Alien alien = it.next();    		
+	    		if (alien.isVisible()) {    			
+	    			int y = alien.getY();    			
+	    			if (y > Params.GROUND - Params.ALIEN_HEIGHT) {    	
+	    				Framework.gameState = Framework.GameState.GAMEOVER;
+	    			}    			
+	    			alien.act(direction);
+	    		}
+	    	} // end while (it.hasNext())
+	    	
+	    	Random generator = new Random();    	
+	    	for(Alien alien : aliens) {    		 // -> bomb 위치 재조정    	
+	    		int shot = generator.nextInt(15);
+	    		Alien.Bomb bomb = alien.getBomb();    		
+	    		if (shot == Params.CHANCE && alien.isVisible() && bomb.isDestroyed()) {    // alien 살아있고 bomb도 살아있다면..?			
+	    			bomb.setDestroyed(false); 
+	    			bomb.setX(alien.getX());   // bomb 위치 재조정
+	    			bomb.setY(alien.getY());    			
+	    		}
+	    		
+	    		int bombX = bomb.getX();
+	    		int bombY = bomb.getY();
+	    		int playerX = playerRocket1.getX();
+	    		int playerY = playerRocket1.getY();
+	    		
+	    		if (playerRocket1.isVisible() && !bomb.isDestroyed()) {    // 플레이어가 밤에 맞아 죽었을 경우..			
+	    			if(bombX >=(playerX) && bombX <= (playerX + playerRocket1.rocketImgWidth)
+	    				&& bombY >= (playerY) && bombY <= (playerY + playerRocket1.rocketImgHeight)) {
+	    				ImageIcon img = new ImageIcon(explImg);
+	    				playerRocket1.setImage(img.getImage());
+	    				playerRocket1.setDying(true);
+	    				bomb.setDestroyed(true);    				
+	    		} }
+	    		
+	    		if (!bomb.isDestroyed()) {    			
+	    			bomb.setY(bomb.getY() + 1);    			
+	    			if (bomb.getY() >= Params.GROUND - Params.BOMB_HEIGHT) {    				
+	    				bomb.setDestroyed(true);
+	    		} }
+	    	} // end for(Alien alien : aliens) 	
+    		
+    		
+    	} else if(Framework.playerCnt==2) {  // 2인용...
+    		for(int i=0; i<2; i++) {
+        		if (shots.get(i) != null && shots.get(i).isVisible()) {    		// -> 플레이어가 alien을 쏴서 죽였을 때의 상황
+            		int shotX = shots.get(i).getX();
+            		int shotY = shots.get(i).getY();    		
+            		for (Alien alien : aliens) {    			
+            			int alienX = alien.getX();
+            			int alienY = alien.getY();    			
+            			if(alien.isVisible() && shots.get(i).isVisible()) {
+            				if (shotX >= (alienX) && shotX <= (alienX + Params.ALIEN_WIDTH)
+            					&& shotY >= (alienY) && shotY <= (alienY + Params.ALIEN_HEIGHT)) {    					
+            					ImageIcon img = new ImageIcon(explImg);
+            					alien.setImage(img.getImage());
+            					alien.setDying(true);
+            					playerRocket1.alienKill++;
+            					shots.get(i).die();
+            		}}}
+            		
+            		int y = shots.get(i).getY();	y-=4;
+            		if (y<0) { shots.get(i).die(); } 
+            		else { shots.get(i).setY(y); }
+            		
+            	} // end if(shot1.isVisible()) 
+        	}
+    		
+    		for (Alien alien : aliens) {    // -> alien의 x값 check
+    			if(alien == null) continue;
+	    		int x = alien.getX();    		
+	    		if (x >= Params.BOARD_WIDTH - Params.BORDER_RIGHT && direction != -1) {    			
+	                direction = -1;
+	                Iterator<Alien> i1 = aliens.iterator();
+	                while (i1.hasNext()) {
+	                    Alien a2 = i1.next();
+	                    a2.setY(a2.getY() + Params.GO_DOWN);
+	                }
+	            }
+	    		
+	    		if (x <= Params.BORDER_LEFT && direction != 1) {    			
+	    			direction = 1;    			
+	    			Iterator<Alien> i2 = aliens.iterator();    			
+	    			while (i2.hasNext()) {    				
+	    				Alien a = i2.next();
+	    				a.setY(a.getY() + Params.GO_DOWN);
+	    			}
+	    		}
+	    	} // end for (Alien alien : aliens)
+	    	
+	    	Iterator<Alien> it = aliens.iterator();   // -> alien의 y값 check    	
+	    	while (it.hasNext()) {    		
+	    		Alien alien = it.next();    		
+	    		if (alien.isVisible()) {    			
+	    			int y = alien.getY();    			
+	    			if (y > Params.GROUND - Params.ALIEN_HEIGHT) {    	
+	    				Framework.gameState = Framework.GameState.GAMEOVER;
+	    			}    			
+	    			alien.act(direction);
+	    		}
+	    	} // end while (it.hasNext())	
+	    		
+		    	
+	    	
+	    	
+	    	Random generator = new Random();    	
+	    	for(Alien alien : aliens) {    		 // -> bomb 위치 재조정    	
+	    		int shot = generator.nextInt(15);
+	    		Alien.Bomb bomb = alien.getBomb();    		
+	    		if (shot == Params.CHANCE && alien.isVisible() && bomb.isDestroyed()) {    // alien 살아있고 bomb도 살아있다면..?			
+	    			bomb.setDestroyed(false); 
+	    			bomb.setX(alien.getX());   // bomb 위치 재조정
+	    			bomb.setY(alien.getY());    			
+	    		}
+	    		
+	    		int bombX = bomb.getX();
+	    		int bombY = bomb.getY();
+	    		int playerX = playerRocket1.getX();
+	    		int playerY = playerRocket1.getY();
+	    		
+	    		if (playerRocket1.isVisible() && !bomb.isDestroyed()) {    // 플레이어가 밤에 맞아 죽었을 경우..			
+	    			if(bombX >=(playerX) && bombX <= (playerX + playerRocket1.rocketImgWidth)
+	    				&& bombY >= (playerY) && bombY <= (playerY + playerRocket1.rocketImgHeight)) {
+	    				ImageIcon img = new ImageIcon(explImg);
+	    				playerRocket1.setImage(img.getImage());
+	    				playerRocket1.setDying(true);
+	    				bomb.setDestroyed(true);    				
+	    		} }
+	    		
+	    		if (playerRocket2.isVisible() && !bomb.isDestroyed()) {    // 플레이어가 밤에 맞아 죽었을 경우..			
+	    			if(bombX >=(playerX) && bombX <= (playerX + playerRocket2.rocketImgWidth)
+	    				&& bombY >= (playerY) && bombY <= (playerY + playerRocket2.rocketImgHeight)) {
+	    				ImageIcon img = new ImageIcon(explImg);
+	    				playerRocket2.setImage(img.getImage());
+	    				playerRocket2.setDying(true);
+	    				bomb.setDestroyed(true);    				
+	    		} }
+	    		
+	    		if (!bomb.isDestroyed()) {    			
+	    			bomb.setY(bomb.getY() + 1);    			
+	    			if (bomb.getY() >= Params.GROUND - Params.BOMB_HEIGHT) {    				
+	    				bomb.setDestroyed(true);
+	    		} }
+	    	} // end for(Alien alien : aliens) 
+	    	
+	    	
+    	}	
+	}
+
+	private void drawAliens(Graphics g) {
+
+        for (Alien alien : aliens) {
+
+            if (alien.isVisible()) {
+                g.drawImage(alien.getImage(), alien.getX(), alien.getY(), this);
+            }
+
+            if (alien.isDying()) {
+                alien.die();
+            }
+        }
+    }
+
+    private void drawPlayer(Graphics g) {
+
+        if (playerRocket1.isVisible()) {
+
+            g.drawImage(playerRocket1.getImage(), playerRocket1.getX(), playerRocket1.getY(), this);
+        }
+
+        if (playerRocket1.isDying()) {
+
+            playerRocket1.die();
+            // 이미지 바껴라!
+            
+            
+            if(rocketNum==1) Framework.gameState = Framework.GameState.GAMEOVER;
+        }
+        
+        if(rocketNum==2) {
+        	if (playerRocket2.isVisible()) {
+
+                g.drawImage(playerRocket2.getImage(), playerRocket2.getX(), playerRocket2.getY(), this);
+            }
+
+            if (playerRocket2.isDying()) {
+
+                playerRocket2.die();
+                // 이미지 바껴라!
+            }
+            
+            if(playerRocket1.isDying() && playerRocket2.isDying()) {
+            	Framework.gameState = Framework.GameState.GAMEOVER;
+            }
+        }
+    }
+	
+    
+
+
+    private void drawBombing(Graphics g) {
+
+        for (Alien a : aliens) {
+
+            Alien.Bomb b = a.getBomb();
+
+            if (!b.isDestroyed()) {
+
+                g.drawImage(b.getImage(), b.getX(), b.getY(), this);
+            }
+        }
+    }
+    
+    
+    
     public void Draw(Graphics2D g2d, Point mousePosition)
     {
         g2d.drawImage(backgroundImg, 0, 0, Framework.frameWidth, Framework.frameHeight, null);
         
         landingArea.Draw(g2d);
         
-        switch(Framework.playerCnt) {
-			case 1:
-				rocketNum = 1;
-				playerRocket1.Draw(g2d);
-			break;
-			case 2:
-				rocketNum = 1;
-				playerRocket1.Draw(g2d);
-				rocketNum = 2;
-				playerRocket2.Draw(g2d);
-			break;
-		}
+        playerRocket1.Draw(g2d);
+        if(Framework.playerCnt == 2) {
+        	rocketNum=2;
+        	playerRocket2.Draw(g2d);
+        }
+        
+        
+        drawPlayer(g2d);
+    	drawBombing(g2d);
+    	
+        if(Framework.level != 1) {
+        	drawAliens(g2d);
+        } 
+        
     }
     
     
-    /**
-     * Draw the game over screen.
-     * 
-     * @param g2d Graphics2D
-     * @param mousePosition Current mouse position.
-     * @param gameTime Game time in nanoseconds.
-     */
     public void DrawGameOver(Graphics2D g2d, Point mousePosition, long gameTime)
     {
         Draw(g2d, mousePosition);
@@ -278,8 +544,11 @@ public class Game {
 		            g2d.drawString("You have crashed the rocket!", Framework.frameWidth / 2 - 90, Framework.frameHeight / 3);
 		            g2d.drawImage(redBorderImg, 0, 0, Framework.frameWidth, Framework.frameHeight, null);
 		        }
+				// 플레이어1의 점수를 띄워줌
 			break;
 			case 2:
+				// 플레이어1과 2의 점수를 띄워줌
+				// 누가 이겼는지 표시해줌.
 				if(playerRocket1.landed)	
 		        {
 		            g2d.drawString("Rocket1 has successfully landed!", Framework.frameWidth / 2 - 100, Framework.frameHeight / 3);
@@ -302,4 +571,6 @@ public class Game {
 			break;
 		}
     }
+    
+
 }

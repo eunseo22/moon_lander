@@ -8,33 +8,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
-/**
- * Landing area where rocket will land.
- * 
- * @author www.gametutorial.net
- */
 
 public class LandingArea {
     
-    /**
-     * X coordinate of the landing area.
-     */
+    
     public int x;
-    /**
-     * Y coordinate of the landing area.
-     */
     public int y;
     
-    /**
-     * Image of landing area.
-     */
-    private BufferedImage landingAreaImg;
-    
-    /**
-     * Width of landing area.
-     */
-    public int landingAreaImgWidth;
-    
+    private BufferedImage landingAreaImg;   
+    public int landingAreaImgWidth;    
     
     public LandingArea()
     {
@@ -45,9 +27,10 @@ public class LandingArea {
     
     private void Initialize()
     {   
-        // X coordinate of the landing area is at 46% frame width.
-        x = (int)(Framework.frameWidth * 0.46);
-        // Y coordinate of the landing area is at 86% frame height.
+    	int random = (int) ((Math.random() * (Params.BOARD_WIDTH-landingAreaImgWidth) + 5)) ;
+    	
+        x = random;
+        //x = (int)(Framework.frameWidth * 0.46);
         y = (int)(Framework.frameHeight * 0.88);
     }
     
